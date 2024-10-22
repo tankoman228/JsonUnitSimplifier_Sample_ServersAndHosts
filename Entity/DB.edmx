@@ -1,0 +1,493 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="Хранилище DB" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="backup">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" />
+          <Property Name="id_host" Type="int" Nullable="false" />
+          <Property Name="id_server" Type="int" Nullable="false" />
+          <Property Name="size_kb" Type="int" Nullable="false" />
+          <Property Name="when_was" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="component">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="id_component_type" Type="int" Nullable="false" />
+          <Property Name="name" Type="varchar" MaxLength="64" Nullable="false" />
+          <Property Name="mhz" Type="int" />
+          <Property Name="memory" Type="int" />
+          <Property Name="cores" Type="int" />
+        </EntityType>
+        <EntityType Name="component_type">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" />
+          <Property Name="typename" Type="varchar" MaxLength="32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="host">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="id_server" Type="int" Nullable="false" />
+          <Property Name="ram_mb" Type="int" Nullable="false" />
+          <Property Name="cpu_cores" Type="int" Nullable="false" />
+          <Property Name="memory_kb_limit" Type="int" Nullable="false" />
+          <Property Name="memory_kb_took" Type="int" Nullable="false" />
+          <Property Name="hostname" Type="varchar" MaxLength="64" Nullable="false" />
+          <Property Name="host_addr" Type="varchar" MaxLength="64" Nullable="false" />
+          <Property Name="comment" Type="varchar" MaxLength="128" Nullable="false" />
+        </EntityType>
+        <EntityType Name="server">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="address" Type="varchar" MaxLength="24" Nullable="false" />
+          <Property Name="name_in_network" Type="varchar" MaxLength="32" Nullable="false" />
+          <Property Name="ram_total_mb" Type="int" Nullable="false" />
+          <Property Name="ram_free_mb" Type="int" Nullable="false" />
+          <Property Name="memory_total_kb" Type="int" Nullable="false" />
+          <Property Name="memory_free_kb" Type="int" Nullable="false" />
+          <Property Name="cores_total" Type="int" Nullable="false" />
+          <Property Name="cores_free" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="server_component">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="id_server" Type="int" Nullable="false" />
+          <Property Name="id_component" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="sysdiagrams">
+          <Key>
+            <PropertyRef Name="diagram_id" />
+          </Key>
+          <Property Name="name" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="principal_id" Type="int" Nullable="false" />
+          <Property Name="diagram_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="version" Type="int" />
+          <Property Name="definition" Type="varbinary(max)" />
+        </EntityType>
+        <Association Name="FK_backup_host">
+          <End Role="host" Type="Self.host" Multiplicity="1" />
+          <End Role="backup" Type="Self.backup" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="host">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="backup">
+              <PropertyRef Name="id_host" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_backup_server1">
+          <End Role="server" Type="Self.server" Multiplicity="1" />
+          <End Role="backup" Type="Self.backup" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="server">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="backup">
+              <PropertyRef Name="id_server" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_component_component_type">
+          <End Role="component_type" Type="Self.component_type" Multiplicity="1" />
+          <End Role="component" Type="Self.component" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="component_type">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="component">
+              <PropertyRef Name="id_component_type" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_host_server1">
+          <End Role="server" Type="Self.server" Multiplicity="1" />
+          <End Role="host" Type="Self.host" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="server">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="host">
+              <PropertyRef Name="id_server" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_server_component_component">
+          <End Role="component" Type="Self.component" Multiplicity="1" />
+          <End Role="server_component" Type="Self.server_component" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="component">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="server_component">
+              <PropertyRef Name="id_component" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_server_component_server1">
+          <End Role="server" Type="Self.server" Multiplicity="1" />
+          <End Role="server_component" Type="Self.server_component" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="server">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="server_component">
+              <PropertyRef Name="id_server" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="Хранилище DBContainer">
+          <EntitySet Name="backup" EntityType="Self.backup" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="component" EntityType="Self.component" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="component_type" EntityType="Self.component_type" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="host" EntityType="Self.host" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="server" EntityType="Self.server" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="server_component" EntityType="Self.server_component" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_backup_host" Association="Self.FK_backup_host">
+            <End Role="host" EntitySet="host" />
+            <End Role="backup" EntitySet="backup" />
+          </AssociationSet>
+          <AssociationSet Name="FK_backup_server1" Association="Self.FK_backup_server1">
+            <End Role="server" EntitySet="server" />
+            <End Role="backup" EntitySet="backup" />
+          </AssociationSet>
+          <AssociationSet Name="FK_component_component_type" Association="Self.FK_component_component_type">
+            <End Role="component_type" EntitySet="component_type" />
+            <End Role="component" EntitySet="component" />
+          </AssociationSet>
+          <AssociationSet Name="FK_host_server1" Association="Self.FK_host_server1">
+            <End Role="server" EntitySet="server" />
+            <End Role="host" EntitySet="host" />
+          </AssociationSet>
+          <AssociationSet Name="FK_server_component_component" Association="Self.FK_server_component_component">
+            <End Role="component" EntitySet="component" />
+            <End Role="server_component" EntitySet="server_component" />
+          </AssociationSet>
+          <AssociationSet Name="FK_server_component_server1" Association="Self.FK_server_component_server1">
+            <End Role="server" EntitySet="server" />
+            <End Role="server_component" EntitySet="server_component" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="DB" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="backup">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" />
+          <Property Name="id_host" Type="Int32" Nullable="false" />
+          <Property Name="id_server" Type="Int32" Nullable="false" />
+          <Property Name="size_kb" Type="Int32" Nullable="false" />
+          <Property Name="when_was" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="host" Relationship="Self.FK_backup_host" FromRole="backup" ToRole="host" />
+          <NavigationProperty Name="server" Relationship="Self.FK_backup_server1" FromRole="backup" ToRole="server" />
+        </EntityType>
+        <EntityType Name="component">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="id_component_type" Type="Int32" Nullable="false" />
+          <Property Name="name" Type="String" MaxLength="64" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="mhz" Type="Int32" />
+          <Property Name="memory" Type="Int32" />
+          <Property Name="cores" Type="Int32" />
+          <NavigationProperty Name="component_type" Relationship="Self.FK_component_component_type" FromRole="component" ToRole="component_type" />
+          <NavigationProperty Name="server_component" Relationship="Self.FK_server_component_component" FromRole="component" ToRole="server_component" />
+        </EntityType>
+        <EntityType Name="component_type">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" />
+          <Property Name="typename" Type="String" MaxLength="32" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="component" Relationship="Self.FK_component_component_type" FromRole="component_type" ToRole="component" />
+        </EntityType>
+        <EntityType Name="host">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="id_server" Type="Int32" Nullable="false" />
+          <Property Name="ram_mb" Type="Int32" Nullable="false" />
+          <Property Name="cpu_cores" Type="Int32" Nullable="false" />
+          <Property Name="memory_kb_limit" Type="Int32" Nullable="false" />
+          <Property Name="memory_kb_took" Type="Int32" Nullable="false" />
+          <Property Name="hostname" Type="String" MaxLength="64" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="host_addr" Type="String" MaxLength="64" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="comment" Type="String" MaxLength="128" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="backup" Relationship="Self.FK_backup_host" FromRole="host" ToRole="backup" />
+          <NavigationProperty Name="server" Relationship="Self.FK_host_server1" FromRole="host" ToRole="server" />
+        </EntityType>
+        <EntityType Name="server">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="address" Type="String" MaxLength="24" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="name_in_network" Type="String" MaxLength="32" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="ram_total_mb" Type="Int32" Nullable="false" />
+          <Property Name="ram_free_mb" Type="Int32" Nullable="false" />
+          <Property Name="memory_total_kb" Type="Int32" Nullable="false" />
+          <Property Name="memory_free_kb" Type="Int32" Nullable="false" />
+          <Property Name="cores_total" Type="Int32" Nullable="false" />
+          <Property Name="cores_free" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="backup" Relationship="Self.FK_backup_server1" FromRole="server" ToRole="backup" />
+          <NavigationProperty Name="host" Relationship="Self.FK_host_server1" FromRole="server" ToRole="host" />
+          <NavigationProperty Name="server_component" Relationship="Self.FK_server_component_server1" FromRole="server" ToRole="server_component" />
+        </EntityType>
+        <EntityType Name="server_component">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="id_server" Type="Int32" Nullable="false" />
+          <Property Name="id_component" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="component" Relationship="Self.FK_server_component_component" FromRole="server_component" ToRole="component" />
+          <NavigationProperty Name="server" Relationship="Self.FK_server_component_server1" FromRole="server_component" ToRole="server" />
+        </EntityType>
+        <EntityType Name="sysdiagrams">
+          <Key>
+            <PropertyRef Name="diagram_id" />
+          </Key>
+          <Property Name="name" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="principal_id" Type="Int32" Nullable="false" />
+          <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="version" Type="Int32" />
+          <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
+        </EntityType>
+        <Association Name="FK_backup_host">
+          <End Role="host" Type="Self.host" Multiplicity="1" />
+          <End Role="backup" Type="Self.backup" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="host">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="backup">
+              <PropertyRef Name="id_host" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_backup_server1">
+          <End Role="server" Type="Self.server" Multiplicity="1" />
+          <End Role="backup" Type="Self.backup" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="server">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="backup">
+              <PropertyRef Name="id_server" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_component_component_type">
+          <End Role="component_type" Type="Self.component_type" Multiplicity="1" />
+          <End Role="component" Type="Self.component" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="component_type">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="component">
+              <PropertyRef Name="id_component_type" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_server_component_component">
+          <End Role="component" Type="Self.component" Multiplicity="1" />
+          <End Role="server_component" Type="Self.server_component" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="component">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="server_component">
+              <PropertyRef Name="id_component" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_host_server1">
+          <End Role="server" Type="Self.server" Multiplicity="1" />
+          <End Role="host" Type="Self.host" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="server">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="host">
+              <PropertyRef Name="id_server" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_server_component_server1">
+          <End Role="server" Type="Self.server" Multiplicity="1" />
+          <End Role="server_component" Type="Self.server_component" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="server">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="server_component">
+              <PropertyRef Name="id_server" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="ServersAndHostsEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="backup" EntityType="Self.backup" />
+          <EntitySet Name="component" EntityType="Self.component" />
+          <EntitySet Name="component_type" EntityType="Self.component_type" />
+          <EntitySet Name="host" EntityType="Self.host" />
+          <EntitySet Name="server" EntityType="Self.server" />
+          <EntitySet Name="server_component" EntityType="Self.server_component" />
+          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" />
+          <AssociationSet Name="FK_backup_host" Association="Self.FK_backup_host">
+            <End Role="host" EntitySet="host" />
+            <End Role="backup" EntitySet="backup" />
+          </AssociationSet>
+          <AssociationSet Name="FK_backup_server1" Association="Self.FK_backup_server1">
+            <End Role="server" EntitySet="server" />
+            <End Role="backup" EntitySet="backup" />
+          </AssociationSet>
+          <AssociationSet Name="FK_component_component_type" Association="Self.FK_component_component_type">
+            <End Role="component_type" EntitySet="component_type" />
+            <End Role="component" EntitySet="component" />
+          </AssociationSet>
+          <AssociationSet Name="FK_server_component_component" Association="Self.FK_server_component_component">
+            <End Role="component" EntitySet="component" />
+            <End Role="server_component" EntitySet="server_component" />
+          </AssociationSet>
+          <AssociationSet Name="FK_host_server1" Association="Self.FK_host_server1">
+            <End Role="server" EntitySet="server" />
+            <End Role="host" EntitySet="host" />
+          </AssociationSet>
+          <AssociationSet Name="FK_server_component_server1" Association="Self.FK_server_component_server1">
+            <End Role="server" EntitySet="server" />
+            <End Role="server_component" EntitySet="server_component" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="Хранилище DBContainer" CdmEntityContainer="ServersAndHostsEntities">
+          <EntitySetMapping Name="backup">
+            <EntityTypeMapping TypeName="DB.backup">
+              <MappingFragment StoreEntitySet="backup">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="id_host" ColumnName="id_host" />
+                <ScalarProperty Name="id_server" ColumnName="id_server" />
+                <ScalarProperty Name="size_kb" ColumnName="size_kb" />
+                <ScalarProperty Name="when_was" ColumnName="when_was" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="component">
+            <EntityTypeMapping TypeName="DB.component">
+              <MappingFragment StoreEntitySet="component">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="id_component_type" ColumnName="id_component_type" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="mhz" ColumnName="mhz" />
+                <ScalarProperty Name="memory" ColumnName="memory" />
+                <ScalarProperty Name="cores" ColumnName="cores" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="component_type">
+            <EntityTypeMapping TypeName="DB.component_type">
+              <MappingFragment StoreEntitySet="component_type">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="typename" ColumnName="typename" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="host">
+            <EntityTypeMapping TypeName="DB.host">
+              <MappingFragment StoreEntitySet="host">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="id_server" ColumnName="id_server" />
+                <ScalarProperty Name="ram_mb" ColumnName="ram_mb" />
+                <ScalarProperty Name="cpu_cores" ColumnName="cpu_cores" />
+                <ScalarProperty Name="memory_kb_limit" ColumnName="memory_kb_limit" />
+                <ScalarProperty Name="memory_kb_took" ColumnName="memory_kb_took" />
+                <ScalarProperty Name="hostname" ColumnName="hostname" />
+                <ScalarProperty Name="host_addr" ColumnName="host_addr" />
+                <ScalarProperty Name="comment" ColumnName="comment" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="server">
+            <EntityTypeMapping TypeName="DB.server">
+              <MappingFragment StoreEntitySet="server">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="address" ColumnName="address" />
+                <ScalarProperty Name="name_in_network" ColumnName="name_in_network" />
+                <ScalarProperty Name="ram_total_mb" ColumnName="ram_total_mb" />
+                <ScalarProperty Name="ram_free_mb" ColumnName="ram_free_mb" />
+                <ScalarProperty Name="memory_total_kb" ColumnName="memory_total_kb" />
+                <ScalarProperty Name="memory_free_kb" ColumnName="memory_free_kb" />
+                <ScalarProperty Name="cores_total" ColumnName="cores_total" />
+                <ScalarProperty Name="cores_free" ColumnName="cores_free" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="server_component">
+            <EntityTypeMapping TypeName="DB.server_component">
+              <MappingFragment StoreEntitySet="server_component">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="id_server" ColumnName="id_server" />
+                <ScalarProperty Name="id_component" ColumnName="id_component" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="sysdiagrams">
+            <EntityTypeMapping TypeName="DB.sysdiagrams">
+              <MappingFragment StoreEntitySet="sysdiagrams">
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="principal_id" ColumnName="principal_id" />
+                <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
+                <ScalarProperty Name="version" ColumnName="version" />
+                <ScalarProperty Name="definition" ColumnName="definition" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="Нет" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

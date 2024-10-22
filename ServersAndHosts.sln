@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32210.238
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServersAndHosts", "ServersAndHosts.csproj", "{46FD9F32-04BB-4F03-94A9-8C575C466D18}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestForServersAndHostWithJSONUnitSimplifier", "Tests\TestForServersAndHostWithJSONUnitSimplifier\TestForServersAndHostWithJSONUnitSimplifier.csproj", "{74E547FE-2156-4E8F-B3DA-193663EB734F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{46FD9F32-04BB-4F03-94A9-8C575C466D18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46FD9F32-04BB-4F03-94A9-8C575C466D18}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46FD9F32-04BB-4F03-94A9-8C575C466D18}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46FD9F32-04BB-4F03-94A9-8C575C466D18}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74E547FE-2156-4E8F-B3DA-193663EB734F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74E547FE-2156-4E8F-B3DA-193663EB734F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74E547FE-2156-4E8F-B3DA-193663EB734F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74E547FE-2156-4E8F-B3DA-193663EB734F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EE2F5BB1-71AE-4019-A3FC-6B1FA7E3D145}
+	EndGlobalSection
+EndGlobal
