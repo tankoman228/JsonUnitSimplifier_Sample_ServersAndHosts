@@ -8,25 +8,12 @@ using ServersAndHosts.Entity;
 
 namespace ServersAndHosts.Service
 {
-    public class ComponentService
+    public class ComponentService : IComponentService
     {
         IRepository<Entity.component> repository;
         public ComponentService(IRepository<Entity.component> repos)
         {
             repository = repos;
-            /*
-            repository.AddAsync(new Entity.component
-            {
-                component_type = new Entity.component_type
-                {
-                    typename = "TestCompType"
-                },
-                cores = 2,
-                memory = 2,
-                mhz = 3,
-                name = "TestComp"
-            }               
-            );*/
         }      
 
         public List<string> GetComponents()

@@ -8,7 +8,7 @@ using ServersAndHosts.Repository;
 
 namespace ServersAndHosts.Service
 {
-    public class HostService
+    public class HostService : IHostService
     {
         private IRepository<Entity.host> repository;
         public HostService(IRepository<Entity.host> repos)

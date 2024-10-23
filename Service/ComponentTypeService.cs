@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ServersAndHosts.Service
 {
-    public class ComponentTypeService
+    public class ComponentTypeService : IComponentTypeService
     {
         private IRepository<Entity.component_type> repository;
         public ComponentTypeService(IRepository<Entity.component_type> repos)

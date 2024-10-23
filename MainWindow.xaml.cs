@@ -22,36 +22,89 @@ namespace ServersAndHosts
     public partial class MainWindow : Window
     {
 
-        Service.ComponentService ComponentService;
-        Service.ComponentTypeService ComponentTypeService;
-        Service.HostService HostService;
-        Service.ServerService ServerService;
+        Service.IComponentService ComponentService;
+        Service.IComponentTypeService ComponentTypeService;
+        Service.IHostService HostService;
+        Service.IServerService ServerService;
+
 
         public MainWindow()
+        {
+            InitMainWindow();
+        }
+        public MainWindow(int THIS_CONSTRUCTOR_MAKES_MOCKS_OF_SERVICES)
+        {
+            InitMainWindow(1);
+        }
+
+        private void InitMainWindow(int THIS_CONSTRUCTOR_MAKES_MOCKS_OF_SERVICES = 0)
         {
             InitializeComponent();
 
             // Services
-            ComponentService = new Service.ComponentService(new Repository<Entity.component>());
-            ComponentTypeService = new Service.ComponentTypeService(new Repository<Entity.component_type>());
-            HostService = new Service.HostService(new Repository<Entity.host>());
-            ServerService = new Service.ServerService(new Repository<Entity.server>());
+            if (THIS_CONSTRUCTOR_MAKES_MOCKS_OF_SERVICES == 0)
+            {
+                ComponentService = new Service.ComponentService(new Repository<Entity.component>());
+                ComponentTypeService = new Service.ComponentTypeService(new Repository<Entity.component_type>());
+                HostService = new Service.HostService(new Repository<Entity.host>());
+                ServerService = new Service.ServerService(new Repository<Entity.server>());
+            }
+            else
+            {
+                // mocks
+
+            }
 
             LoadAsync();
 
+            // Components tab
             btnSaveComp.Click += BtnSaveComp_Click;
             btnDeleteComp.Click += BtnDeleteComp_Click;
+            
+            // Servers tab
+            btnAddComponent.Click += BtnAddComponent_Click;
+            btnServerRemoveSelected.Click += BtnServerRemoveSelected_Click;
+            btnSaveServer.Click += BtnSaveServer_Click;
+            btnEditServer.Click += BtnEditServer_Click;
+            btnDeleteServer.Click += BtnDeleteServer_Click;
+            btnCreateNewServer.Click += BtnCreateNewServer_Click;
+
+            // Hosts tab
+            btnSaveHosts.Click += BtnSaveHosts_Click;
+            btnDeleteHost.Click += BtnDeleteHost_Click;
+            btnCreateNewHost.Click += BtnCreateNewHost_Click;
+            btnSaveAsNew.Click += BtnSaveAsNew_Click;
         }
 
+        /// <summary>
+        /// Обновляет все элементы в списках и таблицах
+        /// </summary>
         private void LoadAsync()
         {
             TryAsyncOrShowError(() => {
                 var t = ComponentTypeService.GetComponentTypes();
-                var c = ComponentService.GetComponents();
-
                 Dispatcher.Invoke(() => {
                     cbComponentType.ItemsSource = t;
+                    cbServerComponentType.ItemsSource = t;
+                });
+            });
+            TryAsyncOrShowError(() => {
+                var c = ComponentService.GetComponents();
+                Dispatcher.Invoke(() => {
                     lbComponents.ItemsSource = c;
+                });
+            });
+            TryAsyncOrShowError(() => {
+                var s = ServerService.GetAllServers();
+                Dispatcher.Invoke(() => {
+                    dgServers.ItemsSource = s;
+                    cbHostServer.ItemsSource = s;
+                });
+            });
+            TryAsyncOrShowError(() => {
+                var h = HostService.GetAllHosts();
+                Dispatcher.Invoke(() => {
+                    dgHosts.ItemsSource = h;
                 });
             });
         }
@@ -77,7 +130,6 @@ namespace ServersAndHosts
             });
         }
 
-
         private int? ParseOrNull(string text)
         {
             int res;
@@ -86,14 +138,18 @@ namespace ServersAndHosts
         }
 
 
-        #region ComponentsTab
+        #region Components Tab
 
         private void BtnDeleteComp_Click(object sender, RoutedEventArgs e)
         {
             var c = lbComponents.SelectedItem as string;
 
             if (Alert.AreYouSure("Do you really want to delete this component from database?")) {
-                TryAsyncOrShowError(() => ComponentService.RemoveComponent(c));
+                TryAsyncOrShowError(() => { 
+                    ComponentService.RemoveComponent(c);
+                    Dispatcher.Invoke(() => LoadAsync());
+                });
+
             }    
         }
 
@@ -103,31 +159,90 @@ namespace ServersAndHosts
             {
                 Alert.Warning("Empty field"); return;
             }
+
+            string type = cbComponentType.Text;
+            string name = tbCompName.Text;
+            var component = new Entity.component
+            {
+                name = name,
+                id_component_type = ComponentTypeService.IdOrAddComponentTypeIfNotExists(type)
+            };
+            component.cores = ParseOrNull(tbCompCores.Text);
+            component.memory = ParseOrNull(tbCompMemory.Text);
+            component.mhz = ParseOrNull(tbCompFreq.Text);
+
             TryAsyncOrShowError(() =>
             {
-                string type = "", name = ""; int? cores = null, mem = null, mhz = null;
-                Dispatcher.Invoke(() =>
-                {
-                    type = cbComponentType.Text;
-                    name = tbCompName.Text;
-                    cores = ParseOrNull(tbCompCores.Text);
-                    mem = ParseOrNull(tbCompMemory.Text);
-                    mhz = ParseOrNull(tbCompFreq.Text);
-                });
-
-                int id_type = ComponentTypeService.IdOrAddComponentTypeIfNotExists(type);
-                ComponentService.AddComponent(new Entity.component
-                {
-                    name = name,
-                    cores = cores,
-                    memory = mem,
-                    mhz = mhz,
-                    id_component_type = id_type
-                });
-                Dispatcher.Invoke(() => LoadAsync());
-
+                ComponentService.AddComponent(component);           
+                LoadAsync();
             }, "Error while saving, maybe name is duplicated?");
         }
+        #endregion
+
+        #region Servers Tab
+
+        Entity.server currentEditedServer = null;
+
+        private void BtnCreateNewServer_Click(object sender, RoutedEventArgs e)
+        {
+            currentEditedServer = null;
+            tcServers.SelectedIndex = 1;
+
+            tbServerAddress.Text = "";
+            tbServerName.Text = "";
+            lbServerInfo.Items.Clear();
+            lbServerComponents.Items.Clear();
+        }
+
+        private void BtnDeleteServer_Click(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void BtnEditServer_Click(object sender, RoutedEventArgs e)
+        {
+            currentEditedServer = dgServers.SelectedItem as Entity.server;
+        }
+
+        private void BtnSaveServer_Click(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void BtnServerRemoveSelected_Click(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void BtnAddComponent_Click(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region Hosts Tab
+
+        private void BtnSaveAsNew_Click(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void BtnCreateNewHost_Click(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void BtnDeleteHost_Click(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void BtnSaveHosts_Click(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+        
         #endregion
     }
 }

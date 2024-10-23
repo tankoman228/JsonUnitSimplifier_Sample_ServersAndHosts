@@ -68,11 +68,14 @@
     <Compile Include="Repository\IRepository.cs" />
     <Compile Include="Repository\Repository.cs" />
     <Compile Include="Repository\RepositoryMock.cs" />
+    <Compile Include="Service\IHostService.cs" />
+    <Compile Include="Service\IComponentTypeService.cs" />
+    <Compile Include="Service\IComponentService.cs" />
     <Compile Include="Service\ComponentService.cs" />
     <Compile Include="Service\ComponentTypeService.cs" />
     <Compile Include="Service\HostService.cs" />
+    <Compile Include="Service\IServerService.cs" />
     <Compile Include="Service\ServerService.cs" />
-    <Compile Include="Service\ServiceResult.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
