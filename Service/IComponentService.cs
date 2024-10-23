@@ -12,6 +12,8 @@ namespace ServersAndHosts.Service
     {
         List<string> GetComponents();
 
+        component SearchComponent(string search);
+
         void AddComponent(Entity.component component);
 
         void RemoveComponent(string component);

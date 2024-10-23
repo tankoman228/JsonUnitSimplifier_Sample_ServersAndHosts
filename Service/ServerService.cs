@@ -23,22 +23,24 @@ namespace ServersAndHosts.Service
 
         public List<Entity.server> GetAllServers()
         {
-            throw new NotImplementedException();
+            return repository.GetAll(new string[] {
+                "server_component", "server_component.component", "server_component.component.component_type"
+            }).ToList();
         }
 
         public void Update(server s)
         {
-            throw new NotImplementedException();
+            repository.Update(s);
         }
 
         public void Delete(server s)
         {
-            throw new NotImplementedException();
+            repository.Delete(s.id);
         }
 
         public void Insert(server s)
         {
-            throw new NotImplementedException();
+            repository.Add(s);
         }
     }
 }

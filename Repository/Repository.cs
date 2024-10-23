@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -20,12 +21,20 @@ namespace ServersAndHosts.Repository
             prop_id = props.Where(f => f.Name.Equals("id")).First();
         }
 
-        public IEnumerable<T> GetAll(string include = null)
+        public IEnumerable<T> GetAll(string[] include = null)
         {
             using (DbContext context = new Entity.ServersAndHostsEntities())
             {
                 if (include == null) return context.Set<T>().ToList();
-                else return context.Set<T>().Include(include).ToList();
+                else
+                {
+                    DbQuery<T> set = context.Set<T>();
+                    foreach (string item in include)
+                    {
+                        set = set.Include(item);
+                    }
+                    return set.ToList();
+                }
             }
         }
 
@@ -59,7 +68,7 @@ namespace ServersAndHosts.Repository
                         field.SetValue(obj, field.GetValue(entity));
                     }
                 }
-                context.SaveChangesAsync();
+                context.SaveChanges();
             }
         }
 
@@ -71,7 +80,7 @@ namespace ServersAndHosts.Repository
                 if (entity != null)
                 {
                     context.Set<T>().Remove(entity);
-                    context.SaveChangesAsync();
+                    context.SaveChanges();
                 }
             }
         }

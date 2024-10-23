@@ -8,7 +8,7 @@ namespace ServersAndHosts.Repository
 {
     public interface IRepository<T> where T : class
     {
-        IEnumerable<T> GetAll(string include = null);
+        IEnumerable<T> GetAll(string[] include = null);
         T GetById(int id);
         int Add(T entity);
         void Update(T entity);

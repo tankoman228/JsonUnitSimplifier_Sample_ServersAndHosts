@@ -63,7 +63,7 @@
                             </StackPanel>
                         </Grid>
                     </TabItem>
-                    <TabItem Header="Server">
+                    <TabItem Header="Server" Height="23" VerticalAlignment="Top">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
@@ -74,8 +74,8 @@
                                 <TextBox x:Name="tbServerAddress"></TextBox>
                                 <Label>Name (in intranet)</Label>
                                 <TextBox x:Name="tbServerName"></TextBox>
-                                <Label>Collected INFO:</Label>
-                                <ListBox x:Name="lbServerInfo" Height="150"></ListBox>
+                                <Label>Collected INFO (only for already save):</Label>
+                                <ListBox x:Name="lbServerInfo" Height="150" FontSize="11"></ListBox>
                             </StackPanel>
                             <StackPanel Grid.Column="1" Margin="2">
                                 <Label>Select type of component to add</Label>
@@ -84,7 +84,7 @@
                                 <ComboBox x:Name="cbServerComponent"></ComboBox>
                                 <Button x:Name="btnAddComponent">Add component</Button>
                                 <Label>Components:</Label>
-                                <ListBox x:Name="lbServerComponents" Height="100"></ListBox>
+                                <ListBox x:Name="lbServerComponents" Height="100" FontSize="11"></ListBox>
                                 <Button x:Name="btnServerRemoveSelected">Remove selected</Button>
                             </StackPanel>
                             <Button x:Name="btnSaveServer" Margin="5" Padding="5" HorizontalAlignment="Center" VerticalAlignment="Bottom" Grid.ColumnSpan="2">Save as new / Save changes</Button>

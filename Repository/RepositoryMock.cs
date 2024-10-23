@@ -27,7 +27,7 @@ namespace ServersAndHosts.Repository
             }
         }
 
-        public IEnumerable<T> GetAll(string v)
+        public IEnumerable<T> GetAll(string[] v)
         {
             return objs;
         }

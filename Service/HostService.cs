@@ -18,7 +18,7 @@ namespace ServersAndHosts.Service
 
         public List<host> GetAllHosts()
         {
-            throw new NotImplementedException();
+            return repository.GetAll().ToList();
         }
 
         public List<host> SaveHosts(List<host> newHosts)

@@ -20,7 +20,7 @@ namespace ServersAndHosts.Service
         {
             List<string> components = new List<string>();
 
-            var comps = repository.GetAll("component_type");
+            var comps = repository.GetAll(new string[] { "component_type", "server_component", "server_component.server" });
             foreach (var comp in comps)
             {
                 components.Add(ComponentToString(comp));
@@ -35,21 +35,26 @@ namespace ServersAndHosts.Service
 
         public void RemoveComponent(string component)
         {
-            var comps = repository.GetAll("component_type");
+            var comp = SearchComponent(component);
+            repository.Delete(comp.id);                      
+        }
+
+        public component SearchComponent(string search)
+        {
+            var comps = repository.GetAll(new string[] { "component_type", "server_component", "server_component.server" });
             foreach (var comp in comps)
             {
-                if (ComponentToString(comp) == component)
+                if (ComponentToString(comp).Contains(search))
                 {
-                    repository.Delete(comp.id);
-                    return;
+                    return comp;
                 }
             }
-            throw new Exception("Not found");            
+            throw new Exception("Not found");
         }
 
         public void GetComponentsOfServer(server s)
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException("GetComponentsOfServer");
         }
 
         private string ComponentToString(component comp)
