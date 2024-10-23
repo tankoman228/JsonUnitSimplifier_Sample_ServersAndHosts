@@ -7,59 +7,57 @@ using System.Threading.Tasks;
 
 namespace ServersAndHosts.Repository
 {
-#pragma warning disable CS1998
 
     internal class RepositoryMock<T> : IRepository<T> where T : class
     {
         private static List<T> objs = new List<T>();
-        private static FieldInfo[] fields;
-        private static FieldInfo field_id;
+        private static PropertyInfo[] props;
+        private static PropertyInfo prop_id;
 
         public RepositoryMock()
         {            
-            fields = typeof(T).GetFields();
-            foreach (var field in fields)
+            props = typeof(T).GetProperties();
+            foreach (var field in props)
             {
                 if (field.Name.ToLower() == "id")
                 {
-                    field_id = field;
+                    prop_id = field;
                     break;
                 }
             }
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync(string v)
+        public IEnumerable<T> GetAll(string v)
         {
             return objs;
         }
 
-        public async Task<T> GetByIdAsync(int id)
+        public T GetById(int id)
         {
             return objs[id];
         }
 
-        public async Task<int> AddAsync(T entity)
+        public int Add(T entity)
         {
-            field_id.SetValue(entity, objs.Count);
+            prop_id.SetValue(entity, objs.Count);
             objs.Add(entity);
             return objs.Count - 1;
         }
 
-        public async Task UpdateAsync(T entity)
+        public void Update(T entity)
         {
             for (int i = 0; i < objs.Count; i++)
             {
-                if (field_id.GetValue(objs[i]) == field_id.GetValue(entity))
+                if (prop_id.GetValue(objs[i]) == prop_id.GetValue(entity))
                 {
                     objs[i] = entity; return;
                 }
             }
         }
 
-        public async Task DeleteAsync(int id)
+        public void Delete(int id)
         {
             objs.RemoveAt(id);
         }
     }
 }
-#pragma warning restore CS1998

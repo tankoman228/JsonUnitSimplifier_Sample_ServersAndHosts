@@ -72,6 +72,7 @@
     <Compile Include="Service\ComponentTypeService.cs" />
     <Compile Include="Service\HostService.cs" />
     <Compile Include="Service\ServerService.cs" />
+    <Compile Include="Service\ServiceResult.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

@@ -43,10 +43,46 @@ namespace ServersAndHosts
             btnDeleteComp.Click += BtnDeleteComp_Click;
         }
 
-        private async void LoadAsync()
+        private void LoadAsync()
         {
-            cbComponentType.ItemsSource = await ComponentTypeService.GetComponentTypes();
-            lbComponents.ItemsSource = await ComponentService.GetComponents();
+            TryAsyncOrShowError(() => {
+                var t = ComponentTypeService.GetComponentTypes();
+                var c = ComponentService.GetComponents();
+
+                Dispatcher.Invoke(() => {
+                    cbComponentType.ItemsSource = t;
+                    lbComponents.ItemsSource = c;
+                });
+            });
+        }
+
+        /// <summary>
+        /// Оборачивает в try catch и выполняет задачу в отдельном потоке
+        /// </summary>
+        private void TryAsyncOrShowError(Action action, string error = "")
+        {
+            Task.Run(() =>
+            {
+                try
+                {
+                    action.Invoke();
+                }
+                catch (Exception ex)
+                {
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        Alert.Error($"Error: {error}\n{ex.Message}");
+                    });
+                }
+            });
+        }
+
+
+        private int? ParseOrNull(string text)
+        {
+            int res;
+            if (int.TryParse(text, out res)) return res;
+            return null;
         }
 
 
@@ -54,17 +90,44 @@ namespace ServersAndHosts
 
         private void BtnDeleteComp_Click(object sender, RoutedEventArgs e)
         {
-            if (Alert.AreYouSure("Do you really want to delete this component from database?"))
-                ComponentService.RemoveComponent(lbComponents.SelectedItem as string);
+            var c = lbComponents.SelectedItem as string;
+
+            if (Alert.AreYouSure("Do you really want to delete this component from database?")) {
+                TryAsyncOrShowError(() => ComponentService.RemoveComponent(c));
+            }    
         }
 
         private void BtnSaveComp_Click(object sender, RoutedEventArgs e)
         {
+            if (cbComponentType.Text == "" || tbCompName.Text == "")
+            {
+                Alert.Warning("Empty field"); return;
+            }
+            TryAsyncOrShowError(() =>
+            {
+                string type = "", name = ""; int? cores = null, mem = null, mhz = null;
+                Dispatcher.Invoke(() =>
+                {
+                    type = cbComponentType.Text;
+                    name = tbCompName.Text;
+                    cores = ParseOrNull(tbCompCores.Text);
+                    mem = ParseOrNull(tbCompMemory.Text);
+                    mhz = ParseOrNull(tbCompFreq.Text);
+                });
 
-            throw new NotImplementedException();
+                int id_type = ComponentTypeService.IdOrAddComponentTypeIfNotExists(type);
+                ComponentService.AddComponent(new Entity.component
+                {
+                    name = name,
+                    cores = cores,
+                    memory = mem,
+                    mhz = mhz,
+                    id_component_type = id_type
+                });
+                Dispatcher.Invoke(() => LoadAsync());
+
+            }, "Error while saving, maybe name is duplicated?");
         }
         #endregion
-
-
     }
 }

@@ -29,31 +29,45 @@ namespace ServersAndHosts.Service
             );*/
         }      
 
-        public async Task<List<string>> GetComponents()
+        public List<string> GetComponents()
         {
             List<string> components = new List<string>();
 
-            var comps = await repository.GetAllAsync("component_type");
+            var comps = repository.GetAll("component_type");
             foreach (var comp in comps)
             {
-                components.Add($"{comp.component_type.typename}: {comp.name}");
+                components.Add(ComponentToString(comp));
             }
             return components;
         }
 
-        public async void AddComponent(Entity.component component)
+        public void AddComponent(Entity.component component)
         {
-            await repository.AddAsync(component);
+            repository.Add(component);
         }
 
         public void RemoveComponent(string component)
         {
-            throw new NotImplementedException();
+            var comps = repository.GetAll("component_type");
+            foreach (var comp in comps)
+            {
+                if (ComponentToString(comp) == component)
+                {
+                    repository.Delete(comp.id);
+                    return;
+                }
+            }
+            throw new Exception("Not found");            
         }
 
         public void GetComponentsOfServer(server s)
         {
             throw new NotImplementedException();
+        }
+
+        private string ComponentToString(component comp)
+        {
+            return $"{comp.component_type.typename}: {comp.name}";
         }
     }
 }

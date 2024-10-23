@@ -8,10 +8,10 @@ namespace ServersAndHosts.Repository
 {
     public interface IRepository<T> where T : class
     {
-        Task<IEnumerable<T>> GetAllAsync(string include = null);
-        Task<T> GetByIdAsync(int id);
-        Task<int> AddAsync(T entity);
-        Task UpdateAsync(T entity);
-        Task DeleteAsync(int id);
+        IEnumerable<T> GetAll(string include = null);
+        T GetById(int id);
+        int Add(T entity);
+        void Update(T entity);
+        void Delete(int id);
     }
 }

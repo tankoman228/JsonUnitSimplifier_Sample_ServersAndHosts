@@ -15,23 +15,23 @@ namespace ServersAndHosts.Service
             repository = repos;
         }
 
-        public async Task<List<Entity.component_type>> GetComponentTypes()
+        public List<Entity.component_type> GetComponentTypes()
         {
-            var res = await repository.GetAllAsync();
+            var res = repository.GetAll();
             return res.ToList();
         }
 
         /// <summary>
         /// Если нужжно, создат, после чего вернёт идентификатор нового объекта
         /// </summary>
-        public async Task<int> IdOrAddComponentTypeIfNotExists(string name)
+        public int IdOrAddComponentTypeIfNotExists(string name)
         {
-            var res = await repository.GetAllAsync();
+            var res = repository.GetAll();
             var t = res.Where(x => x.typename == name).FirstOrDefault();
 
             if (t != null) return t.id;
 
-            return await repository.AddAsync(new Entity.component_type { typename = name });
+            return repository.Add(new Entity.component_type { typename = name });
         }
     }
 }
