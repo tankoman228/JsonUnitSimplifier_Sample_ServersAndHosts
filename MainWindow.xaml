@@ -23,15 +23,17 @@
 
                     <StackPanel>
                         <Label>Component type</Label>
-                        <ComboBox x:Name="cbComponentType" IsEditable="True"></ComboBox>
+                        <ComboBox x:Name="cbComponentType" IsEditable="True"
+                                  DisplayMemberPath="typename">
+                        </ComboBox>
                         <Label>Name</Label>
-                        <TextBox x:Name="cbCompName"></TextBox>
+                        <TextBox x:Name="tbCompName"></TextBox>
                         <Label>Frequency (MHz)</Label>
-                        <TextBox x:Name="cbCompFreq"></TextBox>
+                        <TextBox x:Name="tbCompFreq"></TextBox>
                         <Label>Memory (MB)</Label>
-                        <TextBox x:Name="cbCompMemory"></TextBox>
+                        <TextBox x:Name="tbCompMemory"></TextBox>
                         <Label>Cores</Label>
-                        <TextBox x:Name="cbCompCores"></TextBox>
+                        <TextBox x:Name="tbCompCores"></TextBox>
 
                         <Grid>
                             <Grid.ColumnDefinitions>

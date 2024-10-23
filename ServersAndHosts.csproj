@@ -64,9 +64,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Alert.cs" />
     <Compile Include="Repository\IRepository.cs" />
     <Compile Include="Repository\Repository.cs" />
     <Compile Include="Repository\RepositoryMock.cs" />
+    <Compile Include="Service\ComponentService.cs" />
+    <Compile Include="Service\ComponentTypeService.cs" />
+    <Compile Include="Service\HostService.cs" />
+    <Compile Include="Service\ServerService.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -166,7 +171,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Service\" />
     <Folder Include="Tests\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

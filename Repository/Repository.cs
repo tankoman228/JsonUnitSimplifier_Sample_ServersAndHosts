@@ -10,53 +10,68 @@ namespace ServersAndHosts.Repository
 {
     public class Repository<T> : IRepository<T> where T : class
     {
-        private readonly DbContext _context;
-        private readonly DbSet<T> _dbSet;
         private static FieldInfo[] fields;
+        private static FieldInfo field_id;
 
-        public Repository(DbContext context)
+        public Repository()
         {
-            _context = context;
-            _dbSet = context.Set<T>();
-            fields = typeof(T).GetFields();
+            fields = typeof(T).GetFields();    
+            field_id = fields.Where(f => f.Name == "id").First();
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync()
+        public async Task<IEnumerable<T>> GetAllAsync(string include = null)
         {
-            return await _dbSet.ToListAsync();
+            using (DbContext context = new Entity.ServersAndHostsEntities())
+            {
+                if (include == null) return await context.Set<T>().ToListAsync();
+                else return await context.Set<T>().Include(include).ToListAsync();
+            }
         }
 
         public async Task<T> GetByIdAsync(int id)
         {
-            return await _dbSet.FindAsync(id);
+            using (DbContext context = new Entity.ServersAndHostsEntities())
+            {
+                return await context.Set<T>().FindAsync(id);
+            }
         }
 
-        public async Task AddAsync(T entity)
+        public async Task<int> AddAsync(T entity)
         {
-            _dbSet.Add(entity);
-            await _context.SaveChangesAsync(); // Сохранение изменений
+            using (DbContext context = new Entity.ServersAndHostsEntities())
+            {
+                T value = context.Set<T>().Add(entity);
+                await context.SaveChangesAsync();
+                return (int)field_id.GetValue(value);
+            }
         }
 
         public async Task UpdateAsync(T entity)
         {
-            T obj = await _dbSet.FindAsync(entity);
-            if (obj != null)
+            using (DbContext context = new Entity.ServersAndHostsEntities())
             {
-                foreach (var field in fields)
+                T obj = await context.Set<T>().FindAsync(entity);
+                if (obj != null)
                 {
-                    field.SetValue(obj, field.GetValue(entity));
+                    foreach (var field in fields)
+                    {
+                        field.SetValue(obj, field.GetValue(entity));
+                    }
                 }
+                await context.SaveChangesAsync();
             }
-            await _context.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(int id)
         {
-            var entity = await _dbSet.FindAsync(id);
-            if (entity != null)
+            using (DbContext context = new Entity.ServersAndHostsEntities())
             {
-                _dbSet.Remove(entity);
-                await _context.SaveChangesAsync();
+                var entity = await context.Set<T>().FindAsync(id);
+                if (entity != null)
+                {
+                    context.Set<T>().Remove(entity);
+                    await context.SaveChangesAsync();
+                }
             }
         }
     }

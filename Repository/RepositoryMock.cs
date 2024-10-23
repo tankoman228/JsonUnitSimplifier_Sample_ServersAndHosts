@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace ServersAndHosts.Repository
 {
+#pragma warning disable CS1998
+
     internal class RepositoryMock<T> : IRepository<T> where T : class
     {
         private static List<T> objs = new List<T>();
@@ -26,7 +28,7 @@ namespace ServersAndHosts.Repository
             }
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync()
+        public async Task<IEnumerable<T>> GetAllAsync(string v)
         {
             return objs;
         }
@@ -36,10 +38,11 @@ namespace ServersAndHosts.Repository
             return objs[id];
         }
 
-        public async Task AddAsync(T entity)
+        public async Task<int> AddAsync(T entity)
         {
             field_id.SetValue(entity, objs.Count);
             objs.Add(entity);
+            return objs.Count - 1;
         }
 
         public async Task UpdateAsync(T entity)
@@ -59,3 +62,4 @@ namespace ServersAndHosts.Repository
         }
     }
 }
+#pragma warning restore CS1998
