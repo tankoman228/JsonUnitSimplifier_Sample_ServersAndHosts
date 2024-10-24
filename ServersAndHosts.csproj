@@ -64,10 +64,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Alert.cs" />
+    <Compile Include="Other\Alert.cs" />
     <Compile Include="Repository\IRepository.cs" />
-    <Compile Include="Repository\Repository.cs" />
+    <Compile Include="Repository\RepositoryUniversal.cs" />
     <Compile Include="Repository\RepositoryMock.cs" />
+    <Compile Include="Repository\RepositoryServer.cs" />
     <Compile Include="Service\IHostService.cs" />
     <Compile Include="Service\IComponentTypeService.cs" />
     <Compile Include="Service\IComponentService.cs" />

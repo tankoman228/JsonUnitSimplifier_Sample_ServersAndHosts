@@ -127,8 +127,10 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_server_component_component">
-          <End Role="component" Type="Self.component" Multiplicity="1" />
+        <Association Name="FK_server_component_component1">
+          <End Role="component" Type="Self.component" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
           <End Role="server_component" Type="Self.server_component" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="component">
@@ -139,8 +141,10 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_server_component_server1">
-          <End Role="server" Type="Self.server" Multiplicity="1" />
+        <Association Name="FK_server_component_server">
+          <End Role="server" Type="Self.server" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
           <End Role="server_component" Type="Self.server_component" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="server">
@@ -175,11 +179,11 @@
             <End Role="server" EntitySet="server" />
             <End Role="host" EntitySet="host" />
           </AssociationSet>
-          <AssociationSet Name="FK_server_component_component" Association="Self.FK_server_component_component">
+          <AssociationSet Name="FK_server_component_component1" Association="Self.FK_server_component_component1">
             <End Role="component" EntitySet="component" />
             <End Role="server_component" EntitySet="server_component" />
           </AssociationSet>
-          <AssociationSet Name="FK_server_component_server1" Association="Self.FK_server_component_server1">
+          <AssociationSet Name="FK_server_component_server" Association="Self.FK_server_component_server">
             <End Role="server" EntitySet="server" />
             <End Role="server_component" EntitySet="server_component" />
           </AssociationSet>

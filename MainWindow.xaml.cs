@@ -44,10 +44,10 @@ namespace ServersAndHosts
             // Services
             if (THIS_CONSTRUCTOR_MAKES_MOCKS_OF_SERVICES == 0)
             {
-                ComponentService = new Service.ComponentService(new Repository<Entity.component>());
-                ComponentTypeService = new Service.ComponentTypeService(new Repository<Entity.component_type>());
-                HostService = new Service.HostService(new Repository<Entity.host>());
-                ServerService = new Service.ServerService(new Repository<Entity.server>());
+                ComponentService = new Service.ComponentService(new RepositoryUniversal<Entity.component>());
+                ComponentTypeService = new Service.ComponentTypeService(new RepositoryUniversal<Entity.component_type>());
+                HostService = new Service.HostService(new RepositoryUniversal<Entity.host>());
+                ServerService = new Service.ServerService(new RepositoryServer());
             }
             else
             {
@@ -83,27 +83,27 @@ namespace ServersAndHosts
         /// </summary>
         private void LoadAsync()
         {
-            TryAsyncOrShowError(() => {
+            TryAsyncOrShowError(() => { // Component types
                 var t = ComponentTypeService.GetComponentTypes();
                 Dispatcher.Invoke(() => {
                     cbComponentType.ItemsSource = t;
                     cbServerComponentType.ItemsSource = t;
                 });
             });
-            TryAsyncOrShowError(() => {
+            TryAsyncOrShowError(() => { // Components
                 var c = ComponentService.GetComponents();
                 Dispatcher.Invoke(() => {
                     lbComponents.ItemsSource = c;
                 });
             });
-            TryAsyncOrShowError(() => {
+            TryAsyncOrShowError(() => { // Servers
                 var s = ServerService.GetAllServers();
                 Dispatcher.Invoke(() => {
                     dgServers.ItemsSource = s;
                     cbHostServer.ItemsSource = s;
                 });
             });
-            TryAsyncOrShowError(() => {
+            TryAsyncOrShowError(() => { // Hosts
                 var h = HostService.GetAllHosts();
                 Dispatcher.Invoke(() => {
                     dgHosts.ItemsSource = h;
@@ -126,8 +126,9 @@ namespace ServersAndHosts
                 {
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        Alert.Error($"Error: {error}\n{ex.Message}");
+                        Alert.Error($"Error: {error}\n{ex.Message}\n{ex.InnerException?.Message}");
                     });
+                    throw ex;
                 }
             });
         }
@@ -183,32 +184,16 @@ namespace ServersAndHosts
 
         #region Servers Tab
 
+        // Null - creating new, else - editing already existing
         Entity.server currentEditedServer = null;
 
         private void UpdateCurrentEditedServerInfoInUI_Lists()
         {
-            lbServerInfo.Items.Clear();
+            lbServerInfo.ItemsSource = ServerService.GetAbout(currentEditedServer);
             lbServerComponents.Items.Clear();
             foreach (var x in currentEditedServer.server_component)
             {
                 lbServerComponents.Items.Add(x);
-                try
-                {
-                    string about = $"{x.component.component_type.typename}: {x.component.name}\t";
-                    if (x.component.memory != null)
-                    {
-                        about += $"size of: {x.component.memory}\t";
-                    }
-                    if (x.component.cores != null)
-                    {
-                        about += $"{x.component.cores} cores\t";
-                    }
-                    if (x.component.mhz != null)
-                    {
-                        about += $"Frequency is {x.component.mhz} MHz";
-                    }
-                    lbServerInfo.Items.Add(about);
-                } catch (Exception ex) { Console.Error.WriteLine(ex.StackTrace); }
             }
         }
 
@@ -247,79 +232,41 @@ namespace ServersAndHosts
         private void BtnSaveServer_Click(object sender, RoutedEventArgs e)
         {
             tcServers.SelectedIndex = 0;
-
             Entity.server server;
-            bool makeNew = false;
 
             if (currentEditedServer != null)
             {
                 server = currentEditedServer;
+                server.address = tbServerAddress.Text;
+                server.name_in_network = tbServerName.Text;
+
+                var server_component = new List<Entity.server_component>();
+                foreach (Entity.server_component c in lbServerComponents.Items)
+                {
+                    server_component.Add(c);
+                }
+                TryAsyncOrShowError(() =>
+                {
+                    ServerService.Update(server, server_component); 
+                    LoadAsync();
+                });
             }
             else
             {
-                server = new Entity.server
-                {
-                    address = tbServerAddress.Text,
-                    name_in_network = tbServerName.Text,
-                };
-                makeNew = true;
+                var address = tbServerAddress.Text;
+                var name_in_network = tbServerName.Text;
+                var server_component = new List<Entity.server_component>();
+
+                foreach (Entity.server_component c in lbServerComponents.Items) {
+                    server_component.Add(c); 
+                }
+
+                TryAsyncOrShowError(() =>
+                {                   
+                    ServerService.Create(address, name_in_network, server_component);
+                    LoadAsync();
+                });
             }
-
-            int ram = 0;
-            int disk = 0;
-            int cores = 0;
-
-            if (makeNew)
-                server.server_component = new List<Entity.server_component>();
-            else
-                server.server_component.Clear();
-
-            foreach (Entity.server_component c in lbServerComponents.Items)
-            {
-                try
-                {
-                    server.server_component.Add(c);
-                    if (c.component.component_type.typename.ToLower().Equals("ram"))
-                    {
-                        ram += (int)c.component.memory;
-                    }
-                    else if (c.component.component_type.typename.ToLower().Equals("cpu"))
-                    {
-                        cores += (int)c.component.cores;
-                    }
-                    else if (c.component.component_type.typename.ToLower().Contains("hard"))
-                    {
-                        disk += (int)c.component.memory;
-                    }
-                    else if (c.component.component_type.typename.ToLower().Contains("ssd"))
-                    {
-                        disk += (int)c.component.memory;
-                    }
-                    c.component = null;
-                }
-                catch { c.component = null; }
-            }
-
-            server.ram_free_mb = ram ;
-            server.ram_total_mb = ram;
-            server.memory_free_kb = disk;
-            server.memory_total_kb = cores;
-            server.cores_free = cores;
-            server.cores_total = cores;
-
-            TryAsyncOrShowError(() =>
-            {
-                if (makeNew)
-                {
-                    ServerService.Insert(server);
-                }
-                else
-                {
-                    ServerService.Update(server);
-                }
-                LoadAsync();
-            });
-
         }
 
         private void BtnServerRemoveSelected_Click(object sender, RoutedEventArgs e)
@@ -333,13 +280,9 @@ namespace ServersAndHosts
             var server_component = new Entity.server_component();
 
             if (currentEditedServer != null)
-            {
                 server_component.id_server = currentEditedServer.id;
-            }
             else
-            {
                 server_component.id_server = -1;
-            }
 
             var c = cbServerComponent.Text;
             TryAsyncOrShowError(() =>

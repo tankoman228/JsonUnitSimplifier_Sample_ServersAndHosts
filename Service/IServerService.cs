@@ -14,10 +14,14 @@ namespace ServersAndHosts.Service
 
         List<Entity.server> GetAllServers();
 
-        void Update(server s);
+        void Update(server s, List<server_component> components);
 
         void Delete(server s);
 
         void Insert(server s);
+
+        List<string> GetAbout(server s);
+
+        void Create(string address, string name, List<server_component> components);
     }
 }

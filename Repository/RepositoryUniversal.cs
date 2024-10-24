@@ -9,19 +9,19 @@ using System.Threading.Tasks;
 
 namespace ServersAndHosts.Repository
 {
-    public class Repository<T> : IRepository<T> where T : class
+    public class RepositoryUniversal<T> : IRepository<T> where T : class
     {
         private static PropertyInfo[] props;
         private static PropertyInfo prop_id;
 
-        public Repository()
+        public RepositoryUniversal()
         {
             props = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
             var t = typeof(T).Name;
             prop_id = props.Where(f => f.Name.Equals("id")).First();
         }
 
-        public IEnumerable<T> GetAll(string[] include = null)
+        public virtual IEnumerable<T> GetAll(string[] include = null)
         {
             using (DbContext context = new Entity.ServersAndHostsEntities())
             {
@@ -38,7 +38,7 @@ namespace ServersAndHosts.Repository
             }
         }
 
-        public T GetById(int id)
+        public virtual T GetById(int id)
         {
             using (DbContext context = new Entity.ServersAndHostsEntities())
             {
@@ -46,7 +46,7 @@ namespace ServersAndHosts.Repository
             }
         }
 
-        public int Add(T entity)
+        public virtual int Add(T entity)
         {
             using (DbContext context = new Entity.ServersAndHostsEntities())
             {
@@ -56,23 +56,21 @@ namespace ServersAndHosts.Repository
             }
         }
 
-        public void Update(T entity)
-        {
+
+
+        public virtual void Update(T entity)
+        {          
             using (DbContext context = new Entity.ServersAndHostsEntities())
             {
-                T obj = context.Set<T>().Find(entity);
-                if (obj != null)
-                {
-                    foreach (var field in props)
-                    {
-                        field.SetValue(obj, field.GetValue(entity));
-                    }
-                }
+                var set = context.Set<T>();
+                set.Attach(entity);
+
+                context.Entry(entity).State = EntityState.Modified; // Устанавливаем состояние как измененное
                 context.SaveChanges();
             }
         }
 
-        public void Delete(int id)
+        public virtual void Delete(int id)
         {
             using (DbContext context = new Entity.ServersAndHostsEntities())
             {
