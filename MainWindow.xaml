@@ -113,13 +113,20 @@
 
                             <DataGrid x:Name="dgHosts" CanUserAddRows="False" AutoGenerateColumns="False">
                                 <DataGrid.Columns>
-                                    <DataGridComboBoxColumn 
-                                        Header="Server" 
-                                        SelectedValuePath="id" 
-                                        DisplayMemberPath="Hostname" 
-                                        SelectedValueBinding="{Binding id_server}"
-                                        ItemsSource="{Binding Servers}"
+
+                                    <DataGridTextColumn 
+                                        Header="Current server"
+                                        Binding="{Binding server.name_in_network}"
+                                        IsReadOnly="True"
                                         />
+
+                                    <DataGridComboBoxColumn
+                                        x:Name="dgcbServer"
+                                        Header="Select new server" 
+                                        MinWidth="160"                                   
+                                        DisplayMemberPath="name_in_network" 
+                                        SelectedValueBinding="{Binding server.id_server}"/>
+                                 
                                     <DataGridTextColumn 
                                         Header="RAM (MB)"
                                         Binding="{Binding ram_mb}"
@@ -152,7 +159,6 @@
                             </DataGrid>
 
                             <StackPanel Grid.Row="1" Orientation="Horizontal">
-                                <Button x:Name="btnSaveHosts" Margin="10,5,30,5">Save changes</Button>
                                 <Button x:Name="btnDeleteHost" Margin="10,5,30,5">Delete selected host</Button>
                                 <Button x:Name="btnCreateNewHost" Margin="10,5,30,5">Create new host</Button>
                             </StackPanel>
@@ -166,7 +172,7 @@
                             </Grid.ColumnDefinitions>
                             <StackPanel>
                                 <Label>Server</Label>
-                                <ComboBox x:Name="cbHostServer" IsEditable="True"></ComboBox>
+                                <ComboBox x:Name="cbHostServer" IsEditable="True" DisplayMemberPath="name_in_network"></ComboBox>
 
                                 <Label>RAM (MB)</Label>
                                 <TextBox x:Name="tbHostRam"></TextBox>

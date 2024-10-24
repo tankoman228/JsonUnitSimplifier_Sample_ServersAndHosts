@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="Хранилище DB" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="Хранилище ServersAndHostsModel" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="backup">
           <Key>
             <PropertyRef Name="id" />
@@ -54,11 +54,12 @@
           <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="address" Type="varchar" MaxLength="24" Nullable="false" />
           <Property Name="name_in_network" Type="varchar" MaxLength="32" Nullable="false" />
+          <Property Name="cpu_frequency_mhz" Type="int" Nullable="false" />
+          <Property Name="cores_total" Type="int" Nullable="false" />
           <Property Name="ram_total_mb" Type="int" Nullable="false" />
           <Property Name="ram_free_mb" Type="int" Nullable="false" />
           <Property Name="memory_total_kb" Type="int" Nullable="false" />
           <Property Name="memory_free_kb" Type="int" Nullable="false" />
-          <Property Name="cores_total" Type="int" Nullable="false" />
           <Property Name="cores_free" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="server_component">
@@ -155,7 +156,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="Хранилище DBContainer">
+        <EntityContainer Name="Хранилище ServersAndHostsModelContainer">
           <EntitySet Name="backup" EntityType="Self.backup" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="component" EntityType="Self.component" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="component_type" EntityType="Self.component_type" Schema="dbo" store:Type="Tables" />
@@ -191,7 +192,7 @@
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
-      <Schema Namespace="DB" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+      <Schema Namespace="ServersAndHostsModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityType Name="backup">
           <Key>
             <PropertyRef Name="id" />
@@ -215,13 +216,13 @@
           <Property Name="memory" Type="Int32" />
           <Property Name="cores" Type="Int32" />
           <NavigationProperty Name="component_type" Relationship="Self.FK_component_component_type" FromRole="component" ToRole="component_type" />
-          <NavigationProperty Name="server_component" Relationship="Self.FK_server_component_component" FromRole="component" ToRole="server_component" />
+          <NavigationProperty Name="server_component" Relationship="Self.FK_server_component_component1" FromRole="component" ToRole="server_component" />
         </EntityType>
         <EntityType Name="component_type">
           <Key>
             <PropertyRef Name="id" />
           </Key>
-          <Property Name="id" Type="Int32" Nullable="false" />
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="typename" Type="String" MaxLength="32" FixedLength="false" Unicode="false" Nullable="false" />
           <NavigationProperty Name="component" Relationship="Self.FK_component_component_type" FromRole="component_type" ToRole="component" />
         </EntityType>
@@ -256,7 +257,8 @@
           <Property Name="cores_free" Type="Int32" Nullable="false" />
           <NavigationProperty Name="backup" Relationship="Self.FK_backup_server1" FromRole="server" ToRole="backup" />
           <NavigationProperty Name="host" Relationship="Self.FK_host_server1" FromRole="server" ToRole="host" />
-          <NavigationProperty Name="server_component" Relationship="Self.FK_server_component_server1" FromRole="server" ToRole="server_component" />
+          <NavigationProperty Name="server_component" Relationship="Self.FK_server_component_server" FromRole="server" ToRole="server_component" />
+          <Property Name="cpu_frequency_mhz" Type="Int32" Nullable="false" />
         </EntityType>
         <EntityType Name="server_component">
           <Key>
@@ -265,8 +267,8 @@
           <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="id_server" Type="Int32" Nullable="false" />
           <Property Name="id_component" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="component" Relationship="Self.FK_server_component_component" FromRole="server_component" ToRole="component" />
-          <NavigationProperty Name="server" Relationship="Self.FK_server_component_server1" FromRole="server_component" ToRole="server" />
+          <NavigationProperty Name="component" Relationship="Self.FK_server_component_component1" FromRole="server_component" ToRole="component" />
+          <NavigationProperty Name="server" Relationship="Self.FK_server_component_server" FromRole="server_component" ToRole="server" />
         </EntityType>
         <EntityType Name="sysdiagrams">
           <Key>
@@ -314,8 +316,10 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_server_component_component">
-          <End Role="component" Type="Self.component" Multiplicity="1" />
+        <Association Name="FK_server_component_component1">
+          <End Role="component" Type="Self.component" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
           <End Role="server_component" Type="Self.server_component" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="component">
@@ -338,8 +342,10 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_server_component_server1">
-          <End Role="server" Type="Self.server" Multiplicity="1" />
+        <Association Name="FK_server_component_server">
+          <End Role="server" Type="Self.server" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
           <End Role="server_component" Type="Self.server_component" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="server">
@@ -350,7 +356,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="ServersAndHostsEntities" annotation:LazyLoadingEnabled="true">
+        <EntityContainer Name="ServersAndHostsEntities2" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="backup" EntityType="Self.backup" />
           <EntitySet Name="component" EntityType="Self.component" />
           <EntitySet Name="component_type" EntityType="Self.component_type" />
@@ -370,7 +376,7 @@
             <End Role="component_type" EntitySet="component_type" />
             <End Role="component" EntitySet="component" />
           </AssociationSet>
-          <AssociationSet Name="FK_server_component_component" Association="Self.FK_server_component_component">
+          <AssociationSet Name="FK_server_component_component1" Association="Self.FK_server_component_component1">
             <End Role="component" EntitySet="component" />
             <End Role="server_component" EntitySet="server_component" />
           </AssociationSet>
@@ -378,7 +384,7 @@
             <End Role="server" EntitySet="server" />
             <End Role="host" EntitySet="host" />
           </AssociationSet>
-          <AssociationSet Name="FK_server_component_server1" Association="Self.FK_server_component_server1">
+          <AssociationSet Name="FK_server_component_server" Association="Self.FK_server_component_server">
             <End Role="server" EntitySet="server" />
             <End Role="server_component" EntitySet="server_component" />
           </AssociationSet>
@@ -388,9 +394,9 @@
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="Хранилище DBContainer" CdmEntityContainer="ServersAndHostsEntities">
+        <EntityContainerMapping StorageEntityContainer="Хранилище ServersAndHostsModelContainer" CdmEntityContainer="ServersAndHostsEntities2">
           <EntitySetMapping Name="backup">
-            <EntityTypeMapping TypeName="DB.backup">
+            <EntityTypeMapping TypeName="ServersAndHostsModel.backup">
               <MappingFragment StoreEntitySet="backup">
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="id_host" ColumnName="id_host" />
@@ -401,7 +407,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="component">
-            <EntityTypeMapping TypeName="DB.component">
+            <EntityTypeMapping TypeName="ServersAndHostsModel.component">
               <MappingFragment StoreEntitySet="component">
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="id_component_type" ColumnName="id_component_type" />
@@ -413,7 +419,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="component_type">
-            <EntityTypeMapping TypeName="DB.component_type">
+            <EntityTypeMapping TypeName="ServersAndHostsModel.component_type">
               <MappingFragment StoreEntitySet="component_type">
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="typename" ColumnName="typename" />
@@ -421,7 +427,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="host">
-            <EntityTypeMapping TypeName="DB.host">
+            <EntityTypeMapping TypeName="ServersAndHostsModel.host">
               <MappingFragment StoreEntitySet="host">
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="id_server" ColumnName="id_server" />
@@ -436,8 +442,9 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="server">
-            <EntityTypeMapping TypeName="DB.server">
+            <EntityTypeMapping TypeName="ServersAndHostsModel.server">
               <MappingFragment StoreEntitySet="server">
+                <ScalarProperty Name="cpu_frequency_mhz" ColumnName="cpu_frequency_mhz" />
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="address" ColumnName="address" />
                 <ScalarProperty Name="name_in_network" ColumnName="name_in_network" />
@@ -451,7 +458,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="server_component">
-            <EntityTypeMapping TypeName="DB.server_component">
+            <EntityTypeMapping TypeName="ServersAndHostsModel.server_component">
               <MappingFragment StoreEntitySet="server_component">
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="id_server" ColumnName="id_server" />
@@ -460,7 +467,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="sysdiagrams">
-            <EntityTypeMapping TypeName="DB.sysdiagrams">
+            <EntityTypeMapping TypeName="ServersAndHostsModel.sysdiagrams">
               <MappingFragment StoreEntitySet="sysdiagrams">
                 <ScalarProperty Name="name" ColumnName="name" />
                 <ScalarProperty Name="principal_id" ColumnName="principal_id" />

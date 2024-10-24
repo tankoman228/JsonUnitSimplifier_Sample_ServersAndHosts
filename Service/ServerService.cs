@@ -16,9 +16,18 @@ namespace ServersAndHosts.Service
             repository = repos;
         }
 
-        public bool MayHost(host host)
+        public bool MayHost(server server, host host)
         {
-            throw new NotImplementedException();
+            if (server.ram_free_mb - host.ram_mb < 0)
+                return false;
+
+            if (server.cores_free - host.cpu_cores < 0)
+                return false;
+
+            if (server.memory_free_kb - host.memory_kb_limit < 0)
+                return false;
+
+            return true;
         }
 
         public List<Entity.server> GetAllServers()
@@ -101,34 +110,28 @@ namespace ServersAndHosts.Service
             return aboutList;
         }
 
+
         /// <summary>
         /// Update server's fields about ram, cpu, disk space. update components list
         /// </summary>
         private void UpdateResources(server server, List<server_component> components)
         {
-            int ram = 0, cores = 0, disk = 0;
+            int ram = 0, cores = 0, disk = 0, frequency = 0;
             foreach (var c in components)
             {
-                try
+                if (c.component.component_type.id == 4)
                 {
-                    if (c.component.component_type.typename.ToLower().Equals("ram"))
-                    {
-                        ram += (int)c.component.memory;
-                    }
-                    else if (c.component.component_type.typename.ToLower().Equals("cpu"))
-                    {
-                        cores += (int)c.component.cores;
-                    }
-                    else if (c.component.component_type.typename.ToLower().Contains("hard"))
-                    {
-                        disk += (int)c.component.memory;
-                    }
-                    else if (c.component.component_type.typename.ToLower().Contains("ssd"))
-                    {
-                        disk += (int)c.component.memory;
-                    }
+                    ram += (int)c.component.memory;
                 }
-                catch (Exception ex) { }
+                else if (c.component.component_type.id == 1)
+                {
+                    cores = (int)c.component.cores;
+                    frequency = (int)c.component.mhz;
+                }
+                else if (c.component.component_type.id == 5 || c.component.component_type.id == 12)
+                {
+                    disk += (int)c.component.memory;
+                }
             }
 
             server.ram_free_mb = ram;
@@ -137,13 +140,17 @@ namespace ServersAndHosts.Service
             server.cores_total = cores;
             server.memory_free_kb = disk * 1024;
             server.memory_total_kb = disk * 1024;
+            server.cpu_frequency_mhz = frequency;
 
             foreach (var host in server.host)
             {
                 server.ram_free_mb -= host.ram_mb;
                 server.memory_free_kb -= host.memory_kb_took;
-                server.ram_free_mb -= host.ram_mb;
-            }          
+                server.cores_free -= host.cpu_cores;
+            }
+
+            if (server.ram_free_mb <= 0 || server.memory_free_kb <= 0 || server.ram_free_mb <= 0)
+                throw new Exception("Server will not be able to deal with current tasks, not enough resources");
         }
     }
 }

@@ -10,7 +10,7 @@ namespace ServersAndHosts.Service
 {
     public interface IServerService
     {
-        bool MayHost(host host);
+        bool MayHost(server server, host host);
 
         List<Entity.server> GetAllServers();
 

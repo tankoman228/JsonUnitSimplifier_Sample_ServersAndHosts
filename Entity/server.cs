@@ -31,6 +31,7 @@ namespace ServersAndHosts.Entity
         public int memory_free_kb { get; set; }
         public int cores_total { get; set; }
         public int cores_free { get; set; }
+        public int cpu_frequency_mhz { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<backup> backup { get; set; }

@@ -12,7 +12,7 @@ namespace ServersAndHosts.Service
     {
         List<host> GetAllHosts();
 
-        List<host> SaveHosts(List<host> newHosts);
+        void Update(host host);
 
         void Delete(host s);
 

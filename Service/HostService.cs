@@ -18,22 +18,22 @@ namespace ServersAndHosts.Service
 
         public List<host> GetAllHosts()
         {
-            return repository.GetAll().ToList();
+            return repository.GetAll(new string[] { "server" }).ToList();
         }
 
-        public List<host> SaveHosts(List<host> newHosts)
+        public void Update(host newHost)
         {
-            throw new NotImplementedException();
+            repository.Update(newHost);
         }
 
         public void Delete(host s)
         {
-            throw new NotImplementedException();
+            repository.Delete(s.id);
         }
 
         public void Insert(host s)
         {
-            throw new NotImplementedException();
+            repository.Add(s);
         }
     }
 }

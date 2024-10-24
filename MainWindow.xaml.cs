@@ -1,6 +1,8 @@
-﻿using ServersAndHosts.Repository;
+﻿using ServersAndHosts.Entity;
+using ServersAndHosts.Repository;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,7 +23,6 @@ namespace ServersAndHosts
     /// </summary>
     public partial class MainWindow : Window
     {
-
         Service.IComponentService ComponentService;
         Service.IComponentTypeService ComponentTypeService;
         Service.IHostService HostService;
@@ -46,7 +47,7 @@ namespace ServersAndHosts
             {
                 ComponentService = new Service.ComponentService(new RepositoryUniversal<Entity.component>());
                 ComponentTypeService = new Service.ComponentTypeService(new RepositoryUniversal<Entity.component_type>());
-                HostService = new Service.HostService(new RepositoryUniversal<Entity.host>());
+                HostService = new Service.HostService(new RepositoryHost());
                 ServerService = new Service.ServerService(new RepositoryServer());
             }
             else
@@ -70,13 +71,14 @@ namespace ServersAndHosts
             btnCreateNewServer.Click += BtnCreateNewServer_Click;
 
             // Hosts tab
-            btnSaveHosts.Click += BtnSaveHosts_Click;
             btnDeleteHost.Click += BtnDeleteHost_Click;
             btnCreateNewHost.Click += BtnCreateNewHost_Click;
             btnSaveAsNew.Click += BtnSaveAsNew_Click;
             cbServerComponentType.SelectionChanged += CbServerComponentType_SelectionChanged;
-            
+            dgHosts.CellEditEnding += DgHosts_CellEditEnding;
         }
+
+
 
         /// <summary>
         /// Обновляет все элементы в списках и таблицах
@@ -101,6 +103,8 @@ namespace ServersAndHosts
                 Dispatcher.Invoke(() => {
                     dgServers.ItemsSource = s;
                     cbHostServer.ItemsSource = s;
+
+                    dgcbServer.ItemsSource = s;
                 });
             });
             TryAsyncOrShowError(() => { // Hosts
@@ -108,6 +112,7 @@ namespace ServersAndHosts
                 Dispatcher.Invoke(() => {
                     dgHosts.ItemsSource = h;
                 });
+
             });
         }
 
@@ -231,7 +236,6 @@ namespace ServersAndHosts
 
         private void BtnSaveServer_Click(object sender, RoutedEventArgs e)
         {
-            tcServers.SelectedIndex = 0;
             Entity.server server;
 
             if (currentEditedServer != null)
@@ -249,6 +253,7 @@ namespace ServersAndHosts
                 {
                     ServerService.Update(server, server_component); 
                     LoadAsync();
+                    Dispatcher.Invoke(() => tcServers.SelectedIndex = 0);
                 });
             }
             else
@@ -265,6 +270,7 @@ namespace ServersAndHosts
                 {                   
                     ServerService.Create(address, name_in_network, server_component);
                     LoadAsync();
+                    Dispatcher.Invoke(() => tcServers.SelectedIndex = 0);
                 });
             }
         }
@@ -316,24 +322,125 @@ namespace ServersAndHosts
 
         private void BtnSaveAsNew_Click(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            int ram, cpu, memory;
+            string hostname, hostaddr, comment;
+            Entity.server server = cbHostServer.SelectedItem as Entity.server;
+
+            hostname = tbHostHostname.Text;
+            hostaddr = tbHostAddress.Text;
+            comment = tbHostComment.Text;
+
+            if (server == null)
+            {
+                Alert.Warning("The server wasn't selected"); return;
+            }
+            if (!int.TryParse(tbHostRam.Text, out ram) || ram < 0)
+            {
+                Alert.Warning("Not valid RAM"); return;
+            }
+            if (!int.TryParse(tbHostCPU.Text, out cpu) || cpu < 0)
+            {
+                Alert.Warning("Not valid CPU cores number"); return;
+            }
+            if (!int.TryParse(tbHostMemory.Text, out memory) || memory <= 0)
+            {
+                Alert.Warning("Not valid memory use limit"); return;
+            }
+
+            var newHost = new Entity.host
+            {
+                comment = comment,
+                cpu_cores = cpu,
+                hostname = hostname,
+                id_server = server.id,
+                host_addr = hostaddr,
+                memory_kb_limit = memory,
+                memory_kb_took = 0,
+                ram_mb = ram
+            };
+
+            if (!ServerService.MayHost(server, newHost))
+            {
+                Alert.Warning("This server has not enough resources"); return;
+            }
+
+            TryAsyncOrShowError(() =>
+            {
+                HostService.Insert(newHost);
+
+                Dispatcher.Invoke(() => {
+
+                    tbHostAddress.Text = "";
+                    tbHostMemory.Text = "";
+                    tbHostRam.Text = "";
+                    tbHostCPU.Text = "";
+                    tbHostComment.Text = "";
+
+                    tcSubHosts.SelectedIndex = 0;
+                    LoadAsync();
+                });
+            });
         }
 
         private void BtnCreateNewHost_Click(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            tbHostAddress.Text = "";
+            tbHostMemory.Text = "";
+            tbHostRam.Text = "";
+            tbHostCPU.Text = "";
+            tbHostComment.Text = "";
+
+            tcSubHosts.SelectedIndex = 1;
         }
 
         private void BtnDeleteHost_Click(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            var host = dgHosts.SelectedItem as Entity.host;
+            if (host == null) return;
+            if (!Alert.AreYouSure("Delete?")) return;
+
+            TryAsyncOrShowError(() =>
+            {
+                HostService.Delete(host);
+                LoadAsync();
+            });
         }
 
-        private void BtnSaveHosts_Click(object sender, RoutedEventArgs e)
+        object lck = new object();
+
+        private void DgHosts_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
         {
-            throw new NotImplementedException();
+            var host = dgHosts.CurrentItem as host;
+            if (host == null) return;
+
+            // Получаем новое значение из выпадающего списка
+            if (e.Column is DataGridComboBoxColumn comboBoxColumn)
+            {
+                var comboBox = e.EditingElement as ComboBox;
+                if (comboBox != null)
+                {
+                    // Получение выбранного значения
+                    server selectedValue = comboBox.SelectedValue as server;
+                    if (selectedValue != null)
+                    {
+                        host.server = null;
+                        host.id_server = selectedValue.id;
+                        //MessageBox.Show("UPD to " + selectedValue.name_in_network);
+                    }
+                }
+            }  
+
+            TryAsyncOrShowError(() =>
+            {
+                lock (lck)
+                {
+                    HostService.Update(host);
+                    LoadAsync();
+                }
+            });
         }
-        
+
         #endregion
+
     }
 }

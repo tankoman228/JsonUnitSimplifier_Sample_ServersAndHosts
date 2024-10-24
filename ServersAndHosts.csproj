@@ -64,27 +64,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Other\Alert.cs" />
-    <Compile Include="Repository\IRepository.cs" />
-    <Compile Include="Repository\RepositoryUniversal.cs" />
-    <Compile Include="Repository\RepositoryMock.cs" />
-    <Compile Include="Repository\RepositoryServer.cs" />
-    <Compile Include="Service\IHostService.cs" />
-    <Compile Include="Service\IComponentTypeService.cs" />
-    <Compile Include="Service\IComponentService.cs" />
-    <Compile Include="Service\ComponentService.cs" />
-    <Compile Include="Service\ComponentTypeService.cs" />
-    <Compile Include="Service\HostService.cs" />
-    <Compile Include="Service\IServerService.cs" />
-    <Compile Include="Service\ServerService.cs" />
-    <Page Include="MainWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Compile Include="App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Entity\backup.cs">
       <DependentUpon>DB.tt</DependentUpon>
     </Compile>
@@ -120,6 +99,28 @@
     </Compile>
     <Compile Include="Entity\sysdiagrams.cs">
       <DependentUpon>DB.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Other\Alert.cs" />
+    <Compile Include="Repository\IRepository.cs" />
+    <Compile Include="Repository\RepositoryHost.cs" />
+    <Compile Include="Repository\RepositoryUniversal.cs" />
+    <Compile Include="Repository\RepositoryMock.cs" />
+    <Compile Include="Repository\RepositoryServer.cs" />
+    <Compile Include="Service\Interfaces\IHostService.cs" />
+    <Compile Include="Service\Interfaces\IComponentTypeService.cs" />
+    <Compile Include="Service\Interfaces\IComponentService.cs" />
+    <Compile Include="Service\ComponentService.cs" />
+    <Compile Include="Service\ComponentTypeService.cs" />
+    <Compile Include="Service\HostService.cs" />
+    <Compile Include="Service\Interfaces\IServerService.cs" />
+    <Compile Include="Service\ServerService.cs" />
+    <Page Include="MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -164,6 +165,9 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Tests\" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="Entity\DB.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <DependentUpon>DB.edmx</DependentUpon>
@@ -174,9 +178,6 @@
       <DependentUpon>DB.edmx</DependentUpon>
       <LastGenOutput>DB.cs</LastGenOutput>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Tests\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

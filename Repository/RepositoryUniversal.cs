@@ -23,7 +23,7 @@ namespace ServersAndHosts.Repository
 
         public virtual IEnumerable<T> GetAll(string[] include = null)
         {
-            using (DbContext context = new Entity.ServersAndHostsEntities())
+            using (DbContext context = new Entity.ServersAndHostsEntities2())
             {
                 if (include == null) return context.Set<T>().ToList();
                 else
@@ -40,7 +40,7 @@ namespace ServersAndHosts.Repository
 
         public virtual T GetById(int id)
         {
-            using (DbContext context = new Entity.ServersAndHostsEntities())
+            using (DbContext context = new Entity.ServersAndHostsEntities2())
             {
                 return context.Set<T>().Find(id);
             }
@@ -48,7 +48,7 @@ namespace ServersAndHosts.Repository
 
         public virtual int Add(T entity)
         {
-            using (DbContext context = new Entity.ServersAndHostsEntities())
+            using (DbContext context = new Entity.ServersAndHostsEntities2())
             {
                 T value = context.Set<T>().Add(entity);
                 context.SaveChanges();
@@ -60,7 +60,7 @@ namespace ServersAndHosts.Repository
 
         public virtual void Update(T entity)
         {          
-            using (DbContext context = new Entity.ServersAndHostsEntities())
+            using (DbContext context = new Entity.ServersAndHostsEntities2())
             {
                 var set = context.Set<T>();
                 set.Attach(entity);
@@ -72,7 +72,7 @@ namespace ServersAndHosts.Repository
 
         public virtual void Delete(int id)
         {
-            using (DbContext context = new Entity.ServersAndHostsEntities())
+            using (DbContext context = new Entity.ServersAndHostsEntities2())
             {
                 var entity = context.Set<T>().Find(id);
                 if (entity != null)

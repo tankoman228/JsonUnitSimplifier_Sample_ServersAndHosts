@@ -13,10 +13,10 @@ namespace ServersAndHosts.Entity
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     
-    public partial class ServersAndHostsEntities : DbContext
+    public partial class ServersAndHostsEntities2 : DbContext
     {
-        public ServersAndHostsEntities()
-            : base("name=ServersAndHostsEntities")
+        public ServersAndHostsEntities2()
+            : base("name=ServersAndHostsEntities2")
         {
         }
     
