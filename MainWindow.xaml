@@ -63,7 +63,7 @@
                             </StackPanel>
                         </Grid>
                     </TabItem>
-                    <TabItem Header="Server" Height="23" VerticalAlignment="Top">
+                    <TabItem IsEnabled="False" Header="Server" Height="23" VerticalAlignment="Top">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
@@ -139,7 +139,7 @@
                                         Header="Memory limit (KB)"
                                         Binding="{Binding memory_kb_limit}"
                                         />
-                                    <DataGridTextColumn 
+                                    <DataGridTextColumn IsReadOnly="True"
                                         Header="Memory took (KB)"
                                         Binding="{Binding memory_kb_took}"
                                         />

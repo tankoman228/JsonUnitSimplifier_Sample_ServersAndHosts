@@ -23,7 +23,22 @@ namespace ServersAndHosts.Service
 
         public void Update(host newHost)
         {
-            repository.Update(newHost);
+            var oldHost = repository.GetById(newHost.id);
+            int CPU = oldHost.cpu_cores;
+            int RAM = oldHost.ram_mb;
+            int DISK = oldHost.memory_kb_limit;
+
+            try
+            {                
+                repository.Update(newHost);
+            }
+            catch (Exception ex)
+            {
+                newHost.cpu_cores = CPU;
+                newHost.ram_mb = RAM;
+                newHost.memory_kb_limit = DISK;
+                throw ex;
+            }
         }
 
         public void Delete(host s)

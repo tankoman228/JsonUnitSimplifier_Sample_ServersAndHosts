@@ -61,6 +61,7 @@ namespace ServersAndHosts
             // Components tab
             btnSaveComp.Click += BtnSaveComp_Click;
             btnDeleteComp.Click += BtnDeleteComp_Click;
+            lbComponents.SelectionChanged += LbComponents_SelectionChanged;
             
             // Servers tab
             btnAddComponent.Click += BtnAddComponent_Click;
@@ -77,7 +78,6 @@ namespace ServersAndHosts
             cbServerComponentType.SelectionChanged += CbServerComponentType_SelectionChanged;
             dgHosts.CellEditEnding += DgHosts_CellEditEnding;
         }
-
 
 
         /// <summary>
@@ -148,11 +148,33 @@ namespace ServersAndHosts
 
         #region Components Tab
 
+        private void LbComponents_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (lbComponents.SelectedItem == null) return;
+
+            var c = ComponentService.SearchComponent(lbComponents.SelectedItem as string);
+
+            if (c.memory != null)
+                tbCompMemory.Text = c.memory.ToString();
+            else tbCompMemory.Text = "";
+            if (c.cores != null)
+                tbCompCores.Text = c.cores.ToString();
+            else tbCompCores.Text = "";
+            if (c.mhz != null)
+                tbCompFreq.Text = c.mhz.ToString();
+            else tbCompFreq.Text = "";
+
+            tbCompName.Text = c.name;
+            cbComponentType.Text = c.component_type.typename;
+        }
+
+
         private void BtnDeleteComp_Click(object sender, RoutedEventArgs e)
         {
             var c = lbComponents.SelectedItem as string;
 
-            if (Alert.AreYouSure("Do you really want to delete this component from database?")) {
+            if (Alert.AreYouSure("Do you really want to delete this component from database?\n" +
+                "This may DAMAGE integrity and consistency of data!")) {
                 TryAsyncOrShowError(() => { 
                     ComponentService.RemoveComponent(c);
                     Dispatcher.Invoke(() => LoadAsync());
@@ -181,10 +203,37 @@ namespace ServersAndHosts
 
             TryAsyncOrShowError(() =>
             {
-                ComponentService.AddComponent(component);           
+                component existing = null;
+                try
+                {
+                    existing = ComponentService.SearchComponent(name);
+                }
+                catch { }
+
+                if (existing != null)
+                {
+                    component.id = existing.id;
+                    bool update = false;
+                    Dispatcher.Invoke(() => {
+                        update = Alert.AreYouSure($"Do you really want to update this component? " +
+                            $"This may DAMAGE integrity and consistency of data!") &&
+                                Alert.AreYouSure($"Do you really want to update this component? " +
+                            $"This may DAMAGE integrity and consistency of data! " +
+                            $"This can't be cancelled after saying yes");
+                        if (!update)
+                            Alert.Warning("Update operation cancelled");
+                    });
+                    if (update)
+                    {
+                        ComponentService.RemoveComponent(name);
+                        ComponentService.AddComponent(component);
+                    }
+                }
+                else ComponentService.AddComponent(component);           
                 LoadAsync();
-            }, "Error while saving, maybe name is duplicated?");
+            }, "Error while saving, changes are cancelled\n");
         }
+
         #endregion
 
         #region Servers Tab
@@ -406,15 +455,14 @@ namespace ServersAndHosts
             });
         }
 
-        object lck = new object();
-
         private void DgHosts_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
         {
             var host = dgHosts.CurrentItem as host;
+            if (host == null) host = dgHosts.SelectedItem as host;
             if (host == null) return;
 
             // Получаем новое значение из выпадающего списка
-            if (e.Column is DataGridComboBoxColumn comboBoxColumn)
+            if (e != null && e.Column is DataGridComboBoxColumn comboBoxColumn)
             {
                 var comboBox = e.EditingElement as ComboBox;
                 if (comboBox != null)
@@ -432,11 +480,16 @@ namespace ServersAndHosts
 
             TryAsyncOrShowError(() =>
             {
-                lock (lck)
+                try
                 {
                     HostService.Update(host);
                     LoadAsync();
                 }
+                catch (Exception ex)
+                {
+                    LoadAsync();
+                    throw ex;
+                }                      
             });
         }
 

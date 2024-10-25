@@ -77,10 +77,11 @@ namespace ServersAndHosts.Service
             {
                 server.server_component.Add(new server_component { id_component = c.id_component });
             }
-            repository.Add(server);
 
             // Auto detecting and saving basic server info
             UpdateResources(server, components);
+
+            repository.Add(server);
         }
 
         public List<string> GetAbout(server s)
