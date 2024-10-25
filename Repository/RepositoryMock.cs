@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace ServersAndHosts.Repository
 {
 
-    internal class RepositoryMock<T> : IRepository<T> where T : class
+    public class RepositoryMock<T> : IRepository<T> where T : class
     {
         private static List<T> objs = new List<T>();
         private static PropertyInfo[] props;
@@ -27,21 +27,22 @@ namespace ServersAndHosts.Repository
             }
         }
 
-        public IEnumerable<T> GetAll(string[] v)
+        public IEnumerable<T> GetAll(string[] includes = null)
         {
             return objs;
         }
 
         public T GetById(int id)
         {
-            return objs[id];
-        }
+            return objs[id];   
+        }  
 
         public int Add(T entity)
         {
-            prop_id.SetValue(entity, objs.Count);
+            prop_id.SetValue(entity, objs.Count); 
             objs.Add(entity);
-            return objs.Count - 1;
+            Console.WriteLine((int)prop_id.GetValue(entity));
+            return (int)prop_id.GetValue(entity);
         }
 
         public void Update(T entity)

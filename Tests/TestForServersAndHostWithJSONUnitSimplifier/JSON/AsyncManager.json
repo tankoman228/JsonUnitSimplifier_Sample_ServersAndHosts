@@ -1,0 +1,21 @@
+{
+  "id": "Async Manager",
+  "mode": "constructor",
+  "combination_mode": "all-to-all",
+  "rules": [
+    {
+      "values": [ "place A", "place B", "place Û" ]
+    },
+    {
+      "function": "action_error",
+      "function_calls": 3
+    }
+  ],
+  "asser_before_lambda": [
+    {
+      "field": "Where",
+      "type_assert": "regex",
+      "value": "place (A|B|Û)"
+    }
+  ]
+}

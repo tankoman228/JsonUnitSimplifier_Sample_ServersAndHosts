@@ -101,6 +101,7 @@
       <DependentUpon>DB.tt</DependentUpon>
     </Compile>
     <Compile Include="Other\Alert.cs" />
+    <Compile Include="Other\AsyncManager.cs" />
     <Compile Include="Repository\IRepository.cs" />
     <Compile Include="Repository\RepositoryHost.cs" />
     <Compile Include="Repository\RepositoryUniversal.cs" />
@@ -165,6 +166,7 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Service\Mocks\" />
     <Folder Include="Tests\" />
   </ItemGroup>
   <ItemGroup>

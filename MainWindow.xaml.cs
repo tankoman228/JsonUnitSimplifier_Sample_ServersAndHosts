@@ -1,4 +1,5 @@
 ﻿using ServersAndHosts.Entity;
+using ServersAndHosts.Other;
 using ServersAndHosts.Repository;
 using System;
 using System.Collections.Generic;
@@ -27,7 +28,9 @@ namespace ServersAndHosts
         Service.IComponentTypeService ComponentTypeService;
         Service.IHostService HostService;
         Service.IServerService ServerService;
+        AsyncManager asyncManager = new AsyncManager("App", error => Alert.Error(error));
 
+        #region Window Constructor + Init
 
         public MainWindow()
         {
@@ -40,23 +43,23 @@ namespace ServersAndHosts
 
         private void InitMainWindow(int THIS_CONSTRUCTOR_MAKES_MOCKS_OF_SERVICES = 0)
         {
-            InitializeComponent();
-
             // Services
             if (THIS_CONSTRUCTOR_MAKES_MOCKS_OF_SERVICES == 0)
             {
+                InitializeComponent();
+
                 ComponentService = new Service.ComponentService(new RepositoryUniversal<Entity.component>());
                 ComponentTypeService = new Service.ComponentTypeService(new RepositoryUniversal<Entity.component_type>());
                 HostService = new Service.HostService(new RepositoryHost());
                 ServerService = new Service.ServerService(new RepositoryServer());
+
+                LoadAsync();
             }
             else
             {
                 // mocks
 
-            }
-
-            LoadAsync();
+            }        
 
             // Components tab
             btnSaveComp.Click += BtnSaveComp_Click;
@@ -79,6 +82,12 @@ namespace ServersAndHosts
             dgHosts.CellEditEnding += DgHosts_CellEditEnding;
         }
 
+        #endregion
+
+        public void TryAsyncOrShowError(Action action)
+        {
+            asyncManager.TryAsyncOrReturnError(action);
+        }
 
         /// <summary>
         /// Обновляет все элементы в списках и таблицах
@@ -115,29 +124,7 @@ namespace ServersAndHosts
 
             });
         }
-
-        /// <summary>
-        /// Оборачивает в try catch и выполняет задачу в отдельном потоке
-        /// </summary>
-        private void TryAsyncOrShowError(Action action, string error = "")
-        {
-            Task.Run(() =>
-            {
-                try
-                {
-                    action.Invoke();
-                }
-                catch (Exception ex)
-                {
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        Alert.Error($"Error: {error}\n{ex.Message}\n{ex.InnerException?.Message}");
-                    });
-                    throw ex;
-                }
-            });
-        }
-
+      
         private int? ParseOrNull(string text)
         {
             int res;
@@ -231,7 +218,7 @@ namespace ServersAndHosts
                 }
                 else ComponentService.AddComponent(component);           
                 LoadAsync();
-            }, "Error while saving, changes are cancelled\n");
+            });
         }
 
         #endregion
