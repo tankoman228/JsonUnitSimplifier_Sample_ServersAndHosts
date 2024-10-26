@@ -16,9 +16,9 @@ namespace TestForServersAndHostWithJSONUnitSimplifier
         public void TestWithLib()
         {
             TestByJSON.TestLayeredService<server, RepositoryMock <server>> (
-                File.ReadAllText(PATH + "ReposMock.json"),
-                new RepositoryMock<server>(),
-                (a, b) => a.Add(b),
+                PATH + "ReposMock.json",
+                new RepositoryMock<server>(), 
+                (a, b) => a.Add(b), 
                 (repos, dataset) => {});
         }
 
@@ -69,13 +69,16 @@ namespace TestForServersAndHostWithJSONUnitSimplifier
             Assert.AreEqual(0, servers[0].id);
             Assert.AreEqual(1, servers[1].id);
             Assert.AreEqual(2, servers[2].id);
-
-            Assert.AreEqual(3, repository.Add(servers[1]));
-            Assert.AreEqual(4, repository.Add(servers[2]));
-            Assert.AreEqual(5, repository.Add(servers[3]));
+            Assert.AreEqual(3, servers[3].id);
+  
+            // Я знаю про циклы, for писать для 4 констант писать лень
+            Assert.AreEqual(4, repository.Add(servers[0]));
+            Assert.AreEqual(5, repository.Add(servers[1]));
+            Assert.AreEqual(6, repository.Add(servers[2]));
+            Assert.AreEqual(7, repository.Add(servers[3]));
 
             repository.Delete(5);
-            Assert.ThrowsException<ArgumentOutOfRangeException>(() => repository.Delete(5));
+            Assert.ThrowsException<Exception>(() => repository.GetById(5));
         }
     }
 }

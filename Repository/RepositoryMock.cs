@@ -10,7 +10,7 @@ namespace ServersAndHosts.Repository
 
     public class RepositoryMock<T> : IRepository<T> where T : class
     {
-        private static List<T> objs = new List<T>();
+        private List<T> objs = new List<T>();
         private static PropertyInfo[] props;
         private static PropertyInfo prop_id;
 
@@ -34,7 +34,9 @@ namespace ServersAndHosts.Repository
 
         public T GetById(int id)
         {
-            return objs[id];   
+            var o = objs.FirstOrDefault(x => (int)prop_id.GetValue(x) == id);
+            if (o == null) throw new Exception("Not Found");
+            return o;
         }  
 
         public int Add(T entity)
@@ -58,7 +60,13 @@ namespace ServersAndHosts.Repository
 
         public void Delete(int id)
         {
-            objs.RemoveAt(id);
+            for (int i = 0; i < objs.Count; i++)
+            {
+                if ((int)prop_id.GetValue(objs[i]) == id)
+                {
+                    objs.RemoveAt(i);
+                }
+            }
         }
     }
 }
