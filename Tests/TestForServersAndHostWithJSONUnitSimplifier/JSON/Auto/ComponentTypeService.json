@@ -1,3 +1,11 @@
 {
-
+  "id": "ComponentTypeService",
+  "mode": "fields",
+  "combination_mode": "simple",
+  "classes": [
+    "ServersAndHosts.Entity.component_type,ServersAndHosts",
+    "ServersAndHosts.Service.ComponentTypeService,ServersAndHosts",
+    "TestForServersAndHostWithJSONUnitSimplifier.RepositoryMockComponentType,TestForServersAndHostWithJSONUnitSimplifier",
+    "AddComponentType"
+  ]
 }

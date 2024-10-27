@@ -12,8 +12,8 @@ namespace ServersAndHosts.Service
         List<Entity.component_type> GetComponentTypes();
 
         /// <summary>
-        /// Если нужжно, создат, после чего вернёт идентификатор нового объекта
+        /// Если нужно, создат, после чего вернёт идентификатор нового объекта
         /// </summary>
-       int IdOrAddComponentTypeIfNotExists(string name);
+       int IdOrAddComponentTypeIfNotExists(string name);      
     }
 }
