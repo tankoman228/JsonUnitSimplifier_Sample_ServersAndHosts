@@ -7,5 +7,34 @@
     "ServersAndHosts.Service.ComponentService,ServersAndHosts",
     "TestForServersAndHostWithJSONUnitSimplifier.RepositoryMockComponent,TestForServersAndHostWithJSONUnitSimplifier",
     "AddComponent"
+  ],
+  "rules": [
+    {
+      "field": "name",
+      "values": [ "i4-1388", "kingston a-3982 677GB" ]
+    }
+  ],
+  "assert_after_lambda": [
+    {
+      "function": "GetComponents",
+      "target": "service",
+      "type_assert": "unequals",
+      "results": null
+    },
+    {
+      "function": "SearchComponent",
+      "target": "service",
+      "args": [ "i4-1388" ],
+      "type_assert": "unequals",
+      "result": null
+    },
+    {
+      "function": "SearchComponent",
+      "target": "service",
+      "args": [ null ],
+      "type_assert": "equals",
+      "result": null,
+      "exception": "Exception"
+    }
   ]
 }

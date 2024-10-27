@@ -59,7 +59,7 @@ namespace ServersAndHosts.Service
 
         private string ComponentToString(component comp)
         {
-            return $"{comp.component_type.typename}: {comp.name}";
+            return $"{comp.component_type?.typename}: {comp.name}";
         }
     }
 }
