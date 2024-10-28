@@ -1,1 +1,6 @@
-ServersAndHosts
+ServersAndHosts - это тестовый проект для демонстрации работы библиотеки 
+https://github.com/tankoman228/JsonUnitSimplifier
+
+По ссылке вы найдёте и текстовый туториал, и документацию в формате README.md
+
+Скрипт для БД проекта ищите в корне проекта
