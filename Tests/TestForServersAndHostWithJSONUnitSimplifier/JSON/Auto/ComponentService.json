@@ -32,9 +32,23 @@
       "function": "SearchComponent",
       "target": "service",
       "args": [ null ],
-      "type_assert": "equals",
-      "result": null,
+      "exception": "ArgumentNullException"
+    },
+    {
+      "function": "RemoveComponent",
+      "target": "service",
+      "args": [ "i4-1388" ]
+    },
+    {
+      "function": "SearchComponent",
+      "target": "service",
+      "args": [ "i4-1388" ],
       "exception": "Exception"
+    },
+    {
+      "method": "SearchComponent",
+      "target": "service",
+      "args": [ "kingston a-3982 677GB" ]
     }
   ]
 }

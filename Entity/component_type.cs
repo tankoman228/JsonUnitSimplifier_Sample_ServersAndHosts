@@ -21,7 +21,7 @@ namespace ServersAndHosts.Entity
         }
     
         public int id { get; set; }
-        public string typename { get; set; }
+        public string typename { get; set; } = string.Empty;
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<component> component { get; set; }

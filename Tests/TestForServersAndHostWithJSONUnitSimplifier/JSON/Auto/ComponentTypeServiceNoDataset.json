@@ -1,0 +1,43 @@
+{
+  "id": "ComponentTypeService No dataset",
+  "mode": "constructor",
+  "combination_mode": "simple",
+  "classes": [
+    "ServersAndHosts.Entity.component_type,ServersAndHosts",
+    "ServersAndHosts.Service.ComponentTypeService,ServersAndHosts",
+    "TestForServersAndHostWithJSONUnitSimplifier.RepositoryMockComponentType,TestForServersAndHostWithJSONUnitSimplifier",
+    "AddComponentType"
+  ],
+  "assert_before_lambda": [
+    {
+      "target": "service",
+      "method": "IdOrAddComponentTypeIfNotExists",
+      "args": [
+        [ "RAM" ],
+        [ "CPU" ],
+        [ "SSD" ],
+        [ "HDD" ]
+      ]
+    }
+  ],
+  "assert_after_lambda": [
+    {
+      "target": "service",
+      "function": "GetComponentTypes",
+      "result": null,
+      "type_assert": "unequals"
+    },
+    {
+      "target": "service",
+      "function": "IdOrAddComponentTypeIfNotExists",
+      "args": [ "CPU" ],
+      "result": 1
+    },
+    {
+      "target": "service",
+      "function": "IdOrAddComponentTypeIfNotExists",
+      "args": [ "Adapter" ],
+      "result": 4
+    }
+  ]
+}

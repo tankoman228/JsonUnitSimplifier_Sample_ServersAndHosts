@@ -1,5 +1,5 @@
 {
-  "id": "ComponentTypeService",
+  "id": "ComponentTypeService with dataset",
   "mode": "fields",
   "combination_mode": "simple",
   "classes": [
@@ -7,5 +7,11 @@
     "ServersAndHosts.Service.ComponentTypeService,ServersAndHosts",
     "TestForServersAndHostWithJSONUnitSimplifier.RepositoryMockComponentType,TestForServersAndHostWithJSONUnitSimplifier",
     "AddComponentType"
+  ],
+  "rules": [
+    {
+      "field": "typename",
+      "values": ["RAM", "CPU", "SSD", "HDD"]
+    }
   ]
 }

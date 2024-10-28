@@ -34,6 +34,9 @@ namespace ServersAndHosts.Service
             return repository.Add(new Entity.component_type { typename = name });
         }
 
+        /// <summary>
+        /// Чисто для юнит тестов
+        /// </summary>
         private void AddComponentType(Entity.component_type componentType)
         {
             repository.Add(componentType);
