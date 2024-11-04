@@ -11,7 +11,7 @@
       "function_calls": 3
     }
   ],
-  "asser_before_lambda": [
+  "assert_before_lambda": [
     {
       "field": "Where",
       "type_assert": "regex",

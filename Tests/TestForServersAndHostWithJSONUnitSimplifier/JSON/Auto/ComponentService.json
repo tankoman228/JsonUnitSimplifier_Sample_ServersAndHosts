@@ -19,7 +19,7 @@
       "function": "GetComponents",
       "target": "service",
       "type_assert": "unequals",
-      "results": null
+      "results": [ null ]
     },
     {
       "function": "SearchComponent",

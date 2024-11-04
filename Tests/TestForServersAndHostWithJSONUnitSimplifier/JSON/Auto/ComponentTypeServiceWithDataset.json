@@ -11,7 +11,27 @@
   "rules": [
     {
       "field": "typename",
-      "values": ["RAM", "CPU", "SSD", "HDD"]
+      "values": [ "RAM", "CPU", "SSD", "HDD" ]
+    }
+  ],
+  "assert_after_lambda": [
+    {
+      "target": "service",
+      "function": "GetComponentTypes",
+      "result": null,
+      "type_assert": "unequals"
+    },
+    {
+      "target": "service",
+      "function": "IdOrAddComponentTypeIfNotExists",
+      "args": [ "CPU" ],
+      "result": 1
+    },
+    {
+      "target": "service",
+      "function": "IdOrAddComponentTypeIfNotExists",
+      "args": [ "Adapter" ],
+      "result": 4
     }
   ]
 }
